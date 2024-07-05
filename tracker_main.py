@@ -129,16 +129,22 @@ F_mask = cv2.bitwise_and(F_mask, thresh)
 
 
 contours, _ = cv2.findContours(F_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
+laser_contour = 0
+contour_area = 0
 for contour in contours:
+    if cv2.contourArea(contour) > contour_area:
+        contour_area = cv2.contourArea(contour) 
+        laser_contour = contour
+
+if contour_area > 0:
     # Get the bounding box coordinates of the contour
-    x, y, w, h = cv2.boundingRect(contour)
+    x, y, w, h = cv2.boundingRect(laser_contour)
 
    # Draw a rectangle around the detected laser point
     cv2.rectangle(ave_laser, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
     # Get the center of the contour
-    M = cv2.moments(contour)
+    M = cv2.moments(laser_contour)
     if M["m00"] != 0:
         cX = int(M["m10"] / M["m00"])
         cY = int(M["m01"] / M["m00"])

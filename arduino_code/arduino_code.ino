@@ -10,6 +10,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Start");
   pinMode(2,OUTPUT);
+  pinMode(3,INPUT);
   digitalWrite(2,LOW);
 //  myservo.attach(9);  // attaches the servo on pin 9 to the servo object
 //  myservo2.attach(10);
@@ -32,5 +33,8 @@ void loop() {
       Serial.print("Done");
     }
   }
+//  int val = digitalRead(3);
+//  digitalWrite(2, val);
+ 
 
 }
