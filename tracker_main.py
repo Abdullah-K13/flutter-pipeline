@@ -5,6 +5,10 @@ import time
 
 #configurations paramters
 num_frames_to_average = 10
+dete_area = 20
+pixel_precentage = 15
+max_count = 5
+length_threshould = 3
 
 #connection to Arduino
 arduino = serial.Serial(port='COM6', baudrate=115200, timeout=.1) 
@@ -17,6 +21,11 @@ cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     print("Error: Could not open video capture")
     exit()
+
+
+#########################################################################################
+########################              laser code             ############################
+#########################################################################################
 
 def get_average_frame(num_frames_to_average):
     # Initialize an array to accumulate the frames
@@ -84,8 +93,22 @@ def get_the_white_mask(ave_laser):
     return get_color_mask(ave_laser, upper_range, lower_range)
 
 
+def get_the_lase_contour(mask_1, mask_2):
+    #final mask
+    F_mask = cv2.bitwise_and(red_mask, white_mask)
+
+    contours, _ = cv2.findContours(F_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    laser_contour = 0
+    contour_area = 0
+    for contour in contours:
+        if cv2.contourArea(contour) > contour_area:
+            contour_area = cv2.contourArea(contour) 
+            laser_contour = contour
+    return contour_area,  laser_contour
+    
+
 #########################################################################################
-########################              laser code             #############################
+########################              laser code             ############################
 #########################################################################################
 
 def set_laser(status):
@@ -101,47 +124,21 @@ def Disable_laser():
 def enable_laser():
     set_laser('2')
 
-
 #########################################################################################
-########################              main code             #############################
+########################          drawing - for debbug          #########################
 #########################################################################################
-#get the clear image without the laser point
-Disable_laser()
-ave_no_laser = get_average_frame(num_frames_to_average)
-
-#get the clear image with the laser point
-enable_laser()
-ave_laser = get_average_frame(num_frames_to_average)
-
-#get the red laser point using red color mask
-red_mask = get_the_red_mask(ave_laser)
-
-#Optional - Middle of laser is white color
-white_mask = get_the_white_mask(ave_laser)
-
-#get the chnage sin the ave_no_laser and ave_laser frames
-ret, thresh = get_diff_in_frames(ave_no_laser, ave_laser)
-
-
-#final mask
-F_mask = cv2.bitwise_and(red_mask, white_mask)
-F_mask = cv2.bitwise_and(F_mask, thresh)
-
-
-contours, _ = cv2.findContours(F_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-laser_contour = 0
-contour_area = 0
-for contour in contours:
-    if cv2.contourArea(contour) > contour_area:
-        contour_area = cv2.contourArea(contour) 
-        laser_contour = contour
-
-if contour_area > 0:
+def draw(ave_laser, laser_contour):
     # Get the bounding box coordinates of the contour
     x, y, w, h = cv2.boundingRect(laser_contour)
 
-   # Draw a rectangle around the detected laser point
+    # Draw a rectangle around the detected laser point
     cv2.rectangle(ave_laser, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+    dete_a = x - dete_area
+    dete_b = y - dete_area
+    dete_c = x + w + dete_area
+    dete_d = y + h + dete_area
+    cv2.rectangle(ave_laser, (dete_a, dete_b), (dete_c, dete_d), (0, 255, 0), 2)
 
     # Get the center of the contour
     M = cv2.moments(laser_contour)
@@ -154,20 +151,128 @@ if contour_area > 0:
     # Draw the center of the contour
     cv2.circle(ave_laser, (cX, cY), 5, (255, 0, 0), -1)
 
-while True:
+    return ave_laser
 
-    #Showing the images
-    cv2.imshow('without laser', ave_no_laser)
-    cv2.imshow('with laser', ave_laser)
-    cv2.imshow('thresh', thresh)
+#########################################################################################
+########################              main code             #############################
+#########################################################################################
+contour_area, laser_contour = 0, 0
+dete_a, dete_b, dete_c, dete_d = 0,0,0,0
+dete_center = 0
 
-    cv2.imshow('red_mask', red_mask)
-    cv2.imshow('white_mask', white_mask)
-
+while contour_area == 0:
+    #get the clear image without the laser point
+    Disable_laser()
+    ave_no_laser = get_average_frame(num_frames_to_average)
     
 
 
-    cv2.imshow('F_mask', F_mask)
+    #get the clear image with the laser point
+    enable_laser()
+    ave_laser = get_average_frame(num_frames_to_average)
+    
+    cv2.imshow('without laser', ave_no_laser)
+    cv2.imshow('with laser', ave_laser)
+
+    #get the red laser point using red color mask
+    red_mask = get_the_red_mask(ave_laser)
+
+    #Optional - Middle of laser is white color
+    white_mask = get_the_white_mask(ave_laser)
+
+    color_mask = cv2.bitwise_and(red_mask, white_mask)
+
+    #get the chnage sin the ave_no_laser and ave_laser frames
+    ret, thresh = get_diff_in_frames(ave_no_laser, ave_laser)
+
+    contour_area, laser_contour = get_the_lase_contour(color_mask, thresh)
+
+
+
+# cv2.imshow('thresh', thresh)
+# cv2.imshow('red_mask', red_mask)
+# cv2.imshow('white_mask', white_mask)
+# ave_laser_draw = draw(ave_laser, laser_contour)
+cv2.imshow('without laser', ave_no_laser)
+cv2.imshow('with laser', ave_laser)
+
+
+# Get the bounding box coordinates of the contour
+x, y, w, h = cv2.boundingRect(laser_contour)
+dete_a = x - dete_area
+dete_b = y - dete_area
+dete_c = x + w + dete_area
+dete_d = y + h + dete_area
+
+# Get the center of the contour
+M = cv2.moments(laser_contour)
+if M["m00"] != 0:
+    cX = int(M["m10"] / M["m00"])
+    cY = int(M["m01"] / M["m00"])
+else:
+    cX, cY = 0, 0
+    print("ERROR: can not find the center of laser point")
+
+
+file1 = open("myfile.txt",'a')
+
+
+initial_image =  cv2.cvtColor(ave_laser[dete_b:dete_d,dete_a:dete_c], cv2.COLOR_BGR2GRAY )
+total_pixels = initial_image.size
+
+cv2.imshow('initial_image', initial_image)
+count = 0
+test_bool = True
+while True:
+
+    ret, frame = cap.read()
+    cv2.imshow('frame', frame)
+    
+    if not ret:
+        break
+
+    second_image = cv2.cvtColor(frame[dete_b:dete_d,dete_a:dete_c], cv2.COLOR_BGR2GRAY )
+    cv2.imshow('second_image', second_image)
+    diff = cv2.absdiff(initial_image, second_image)
+    ret, thresh = cv2.threshold(diff, 50, 255, cv2.THRESH_BINARY)
+    cv2.imshow('point', thresh)
+    
+    changed_pixels = cv2.countNonZero(thresh)
+    percentage_change = (changed_pixels / total_pixels) * 100
+    if percentage_change > pixel_precentage:
+        #get the red laser point using red color mask
+        red_mask = get_the_red_mask(frame)
+        #Optional - Middle of laser is white color
+        white_mask = get_the_white_mask(frame)
+        contour_area, laser_contour = get_the_lase_contour(red_mask, white_mask)
+        M = cv2.moments(laser_contour)
+        if M["m00"] != 0:
+            LX = int(M["m10"] / M["m00"])
+            LY = int(M["m01"] / M["m00"])
+            distanse = pow((LX-cX),2) + pow((LY-cY),2)
+            #print("Distance change : " +  str(distanse))
+            file1.write(str(distanse)+'\n')
+            file1.flush()
+            if length_threshould > distanse:
+                count+=1
+                if count > max_count :
+                        Disable_laser()
+                        test_bool = False
+                        print("OFF")
+                        
+            else:
+                count = 0
+            
+
+        else:
+            print("ERROR: can not find the center of laser point")
+            distanse = 1000
+    
+
+        
+
+
+    
 
     # Exit if 'q' is pressed
     if cv2.waitKey(1) & 0xFF == ord('q'):

@@ -8,7 +8,6 @@ int max_val =130;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("Start");
   pinMode(2,OUTPUT);
   pinMode(3,INPUT);
   digitalWrite(2,LOW);
@@ -23,15 +22,10 @@ String x;
 void loop() {
   
   while (Serial.available()){
-    x = Serial.readString().toInt(); 
-    if(x==1){
-      digitalWrite(2,LOW);
-      Serial.print("Done");
-    }
-    else{
-      digitalWrite(2,HIGH);
-      Serial.print("Done");
-    }
+      bool x = digitalRead(2);
+      
+      digitalWrite(2,(x^true));
+    
   }
 //  int val = digitalRead(3);
 //  digitalWrite(2, val);
