@@ -106,7 +106,19 @@ def get_the_lase_contour(mask_1, mask_2):
             laser_contour = contour
     return contour_area,  laser_contour
     
+def monitor_laser_point(frame):
+    second_image = cv2.cvtColor(frame[dete_b:dete_d,dete_a:dete_c], cv2.COLOR_BGR2GRAY )
+    
+    diff = cv2.absdiff(initial_image, second_image)
+    ret, thresh = cv2.threshold(diff, 50, 255, cv2.THRESH_BINARY)
 
+    cv2.imshow("theshed", thresh)
+
+    if not ret:
+        print("ERROR : threshold function failed")
+    
+    changed_pixels = cv2.countNonZero(thresh)
+    return (changed_pixels / total_pixels) * 100
 #########################################################################################
 ########################              laser code             ############################
 #########################################################################################
@@ -172,6 +184,7 @@ while contour_area == 0:
     ave_laser = get_average_frame(num_frames_to_average)
     
     cv2.imshow('without laser', ave_no_laser)
+    ''
     cv2.imshow('with laser', ave_laser)
 
     #get the red laser point using red color mask
@@ -192,9 +205,9 @@ while contour_area == 0:
 # cv2.imshow('thresh', thresh)
 # cv2.imshow('red_mask', red_mask)
 # cv2.imshow('white_mask', white_mask)
-# ave_laser_draw = draw(ave_laser, laser_contour)
+ave_laser_draw = draw(ave_laser, laser_contour)
 cv2.imshow('without laser', ave_no_laser)
-cv2.imshow('with laser', ave_laser)
+cv2.imshow('with laser', ave_laser_draw)
 
 
 # Get the bounding box coordinates of the contour
@@ -215,50 +228,49 @@ else:
 
 
 file1 = open("myfile.txt",'a')
-
+line_string = ""
+index = 1
 
 initial_image =  cv2.cvtColor(ave_laser[dete_b:dete_d,dete_a:dete_c], cv2.COLOR_BGR2GRAY )
 total_pixels = initial_image.size
 
-cv2.imshow('initial_image', initial_image)
 count = 0
 test_bool = True
 while True:
+    line_string = ""
 
-    ret, frame = cap.read()
+    #ret, frame = cap.read()
+    frame = get_average_frame(3)
     cv2.imshow('frame', frame)
     
-    if not ret:
-        break
-
-    second_image = cv2.cvtColor(frame[dete_b:dete_d,dete_a:dete_c], cv2.COLOR_BGR2GRAY )
-    cv2.imshow('second_image', second_image)
-    diff = cv2.absdiff(initial_image, second_image)
-    ret, thresh = cv2.threshold(diff, 50, 255, cv2.THRESH_BINARY)
-    cv2.imshow('point', thresh)
     
-    changed_pixels = cv2.countNonZero(thresh)
-    percentage_change = (changed_pixels / total_pixels) * 100
+    percentage_change = monitor_laser_point(frame)
+    line_string = str(percentage_change) + " "
     if percentage_change > pixel_precentage:
         #get the red laser point using red color mask
         red_mask = get_the_red_mask(frame)
         #Optional - Middle of laser is white color
         white_mask = get_the_white_mask(frame)
         contour_area, laser_contour = get_the_lase_contour(red_mask, white_mask)
+
+        cv2.imwrite(("image_"+str(index)+".jpeg"),frame)
+        index += 1
+
         M = cv2.moments(laser_contour)
         if M["m00"] != 0:
             LX = int(M["m10"] / M["m00"])
             LY = int(M["m01"] / M["m00"])
             distanse = pow((LX-cX),2) + pow((LY-cY),2)
+            line_string += str(distanse) + " "
             #print("Distance change : " +  str(distanse))
-            file1.write(str(distanse)+'\n')
-            file1.flush()
+            
             if length_threshould > distanse:
                 count+=1
                 if count > max_count :
-                        Disable_laser()
-                        test_bool = False
-                        print("OFF")
+                    Disable_laser()
+                    test_bool = False
+                    print("OFF")
+                    line_string += "Detect"
                         
             else:
                 count = 0
@@ -268,7 +280,8 @@ while True:
             print("ERROR: can not find the center of laser point")
             distanse = 1000
     
-
+    file1.write(line_string+'\n')
+    file1.flush()
         
 
 
