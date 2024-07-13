@@ -184,7 +184,7 @@ while contour_area == 0:
     ave_laser = get_average_frame(num_frames_to_average)
     
     cv2.imshow('without laser', ave_no_laser)
-    ''
+    
     cv2.imshow('with laser', ave_laser)
 
     #get the red laser point using red color mask
