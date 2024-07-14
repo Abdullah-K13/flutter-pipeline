@@ -1,1 +1,5 @@
 sudo install python3-bluez
+
+how to run blue.py
+sudo hciconfig hci0 piscan
+sudo python3 blu.py
