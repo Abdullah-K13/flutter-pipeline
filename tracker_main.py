@@ -6,12 +6,12 @@ import time
 #configurations paramters
 num_frames_to_average = 10
 dete_area = 20
-pixel_precentage = 15
-max_count = 5
-length_threshould = 3
+pixel_precentage = 40
+max_count = 1
+length_threshould = 100
 
 #connection to Arduino
-arduino = serial.Serial(port='COM6', baudrate=115200, timeout=.1) 
+#arduino = serial.Serial(port='COM6', baudrate=115200, timeout=.1) 
 
 
 # Initialize video capture
@@ -124,11 +124,11 @@ def monitor_laser_point(frame):
 #########################################################################################
 
 def set_laser(status):
-    arduino.write(bytes(status, 'utf-8')) 
+    #arduino.write(bytes(status, 'utf-8')) 
     time.sleep(1)
-    data = arduino.readline() 
-    print(data)
-    return data 
+    #data = arduino.readline() 
+    #print(data)
+    return 1 
 
 def Disable_laser():
     set_laser('1')
@@ -253,16 +253,20 @@ while True:
         white_mask = get_the_white_mask(frame)
         contour_area, laser_contour = get_the_lase_contour(red_mask, white_mask)
 
-        cv2.imwrite(("image_"+str(index)+".jpeg"),frame)
-        index += 1
+        
+        
 
         M = cv2.moments(laser_contour)
         if M["m00"] != 0:
             LX = int(M["m10"] / M["m00"])
             LY = int(M["m01"] / M["m00"])
             distanse = pow((LX-cX),2) + pow((LY-cY),2)
-            line_string += str(distanse) + " "
-            #print("Distance change : " +  str(distanse))
+            line_string += str(distanse) + " " + str((LX-cX)) + " " + str((LY-cY))
+            print("x and y distance : " +  str((LX-cX)) + " " + str((LY-cY)))
+            cv2.imwrite(("image_"+str(index)+".jpeg"),frame)
+            
+            index += 1
+            print("Distance change : " +  str(distanse))
             
             if length_threshould > distanse:
                 count+=1
@@ -274,14 +278,16 @@ while True:
                         
             else:
                 count = 0
+                
+            file1.write(line_string+'\n')
+            file1.flush()
             
 
         else:
             print("ERROR: can not find the center of laser point")
             distanse = 1000
     
-    file1.write(line_string+'\n')
-    file1.flush()
+    
         
 
 

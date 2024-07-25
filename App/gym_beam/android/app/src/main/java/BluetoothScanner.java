@@ -25,7 +25,9 @@ import java.util.List;
 
 import android.util.Log;
 
-public class BluetoothScanner {
+public class BluetoothScanner implements Runnable {
+
+    String TAG = "BluettothScanner";
 
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothLeScanner bluetoothLeScanner;
@@ -39,6 +41,8 @@ public class BluetoothScanner {
     private BluetoothSocket bluetoothSocket;
     private InputStream inputStream;
     private OutputStream outputStream;
+
+    private byte[] buffer; // Buffer store for the stream
 
     public BluetoothScanner(Context context) {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -58,12 +62,6 @@ public class BluetoothScanner {
                     BluetoothDevice device = result.getDevice();
                     if (!deviceList.contains(device)) {
                         deviceList.add(device);
-                        // if(!device.equals(null)){
-                        //     Log.d("BluetoothScanner found 2", device.getName());
-                        //     for( ParcelUuid uuidList: device.getUuids()){
-                        //         Log.d("BluetoothScanner UUID ", uuidList.toString());
-                        //     }
-                        // }
                     }
                 }
 
@@ -73,12 +71,6 @@ public class BluetoothScanner {
                         BluetoothDevice device = result.getDevice();
                         if (!deviceList.contains(device)) {
                             deviceList.add(device);
-                            // if(!device.equals(null)){
-                            //     Log.d("BluetoothScanner found 1", device.getName());
-                            //     for( ParcelUuid uuidList: device.getUuids()){
-                            //         Log.d("BluetoothScanner UUID ", uuidList.toString());
-                            //     }
-                            // }
                         }
                     }
                 }
@@ -101,35 +93,26 @@ public class BluetoothScanner {
         }
     }
 
-    public List<BluetoothDevice> getDeviceList() {
-        return deviceList;
-    }
-
-    public List<Map<String, String>> getPairedDevices() {
-        Log.d("BluetoothScanner", "enter getPairedDevices");
+    public List<Map<String, String>> getDeviceList() {
+        Log.d(TAG, "enter getPairedDevices");
         List<BluetoothDevice> pairedDevices = new ArrayList<BluetoothDevice>(bluetoothAdapter.getBondedDevices());
   
         //need to fix the scan and then add these two list together
         deviceList = pairedDevices;
-
 
         List<Map<String, String>> deviceNameList = new ArrayList<>();
         for(BluetoothDevice device: deviceList){
             Map<String, String> deviceInfo = new HashMap<>();
             
             deviceInfo.put("name", device.getName());
-            
-            
-
-                for( ParcelUuid uuidList: device.getUuids()){
-                    Log.d("BluetoothScanner UUID ", uuidList.toString());
-                }
-            
-            
             deviceInfo.put("address", device.getAddress());
-
             deviceNameList.add(deviceInfo);
-            Log.d("BluetoothScanner list ", device.getName());
+            
+            //TODO: need to delete
+            for( ParcelUuid uuidList: device.getUuids()){
+                Log.d(TAG, uuidList.toString());
+            }
+            Log.d(TAG,  device.getName());
         } 
         return deviceNameList;
     }
@@ -143,15 +126,16 @@ public class BluetoothScanner {
                 bluetoothSocket.connect();
                 inputStream = bluetoothSocket.getInputStream();
                 outputStream = bluetoothSocket.getOutputStream();
-                Log.d("BluetoothScanner", "Connected to device: " + address);
+                Log.d(TAG, "Connected to device: " + address);
                 callback.onConnect(true);
+                run();
             } catch (IOException e) {
-                Log.e("BluetoothScanner", "Failed to connect to device: " + address, e);
+                Log.e(TAG, "Failed to connect to device: " + address, e);
                 
                 try {
                     bluetoothSocket.close();
                 } catch (IOException closeException) {
-                    Log.e("BluetoothScanner", "Failed to close socket.", closeException);
+                    Log.e(TAG, "Failed to close socket.", closeException);
                 }
                 callback.onConnect(false);
             }
@@ -166,11 +150,40 @@ public class BluetoothScanner {
         if (outputStream != null) {
             try {
                 outputStream.write(data.getBytes());
-                Log.d("BluetoothScanner", "Data sent: " + data);
+                Log.d(TAG, "Data sent: " + data);
             } catch (IOException e) {
-                Log.e("BluetoothScanner", "Failed to send data.", e);
+                Log.e(TAG, "Failed to send data.", e);
             }
         }
     }
+
+    @Override
+    public void run() {
+        Log.d(TAG, "RUN function start");
+        buffer = new byte[1024];  // Buffer store for the stream
+        int bytes; // Bytes returned from read()
+
+        // Keep listening to the InputStream until an exception occurs
+        while (true) {
+            try {
+                // Read from the InputStream
+                bytes = inputStream.read(buffer);
+                String receivedData = new String(buffer, 0, bytes);
+                // Handle the received data (e.g., display it or process it)
+                handleReceivedData(receivedData);
+            } catch (IOException e) {
+                e.printStackTrace();
+                break;
+            }
+        }
+    }
+
+    // Method to handle the received data
+    private void handleReceivedData(String data) {
+        // Process the received data (update UI, save to file, etc.)
+        // Ensure you run any UI updates on the main thread
+        Log.d("BluetoothData", "Received: " + data);
+    }
+    
     
 }

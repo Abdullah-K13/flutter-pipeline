@@ -3,63 +3,60 @@
 
 
 #define LASER_PIN  2
-#define TOP_SERVO 5
-#define DOWN_SERVO 6
+#define TOP_SERVO 9
+#define DOWN_SERVO 10
 
 Servo myservo_top;  // create servo object to control a servo
 Servo myservo_down; 
 
-void controller(char c){
-  switch (c){
+bool up = true;
 
-    case 'A':
-      digitalWrite(2,HIGH);
-      break;
 
-    case 'B':
-      digitalWrite(2,LOW);
-      break;
-
-    case 'C':
-      myservo_top.write(60);
-      break;
-
-    case 'D':
-      myservo_top.write(120);
-      break;
-
-    case 'E':
-      myservo_down.write(60);
-      break;
-
-    case 'F':
-      myservo_down.write(120);
-      break;
-      
+void controller(int c){
+  if(220 == c){
+    //disable laser
+    Serial.println("Laser disable");
+    digitalWrite(LASER_PIN,LOW);
+    
   }
-}
-
-void receiveEvent(int howMany){
-  while(Wire.available()){
-    char  c = Wire.read();
+  else if(230 == c){
+    //enable laser
+    Serial.println("Laser enable");
+    digitalWrite(LASER_PIN,HIGH);
+  }
+  else if(up){
+    Serial.print("TOP : ");
     Serial.println(c);
-    controller(c);
+    myservo_top.write(c); 
+    up=false;
+  }
+  else{
+    Serial.print("DOWN : ");
+    Serial.println(c);
+    myservo_down.write(c);
+    up = true;
   }
   
+}
+
+
+
+volatile int receivedValue = 0;
+void receiveEvent(int numBytes){
+  //Serial.println(numBytes);
+  while(Wire.available()){
+    int  c = Wire.read();
+    controller(c);
+  }
 }
 
 void setup() {
  Serial.begin(115200);
  Serial.println("Start..");
- pinMode(2,OUTPUT);
+ pinMode(LASER_PIN,OUTPUT);
   myservo_top.attach(TOP_SERVO);  // attaches the servo on pin 9 to the servo object
   myservo_down.attach(DOWN_SERVO);
-  myservo_top.write(90);                  // sets the servo position according to the scaled value
-  myservo_down.write(90);
-  delay(100);
-  myservo_top.write(60);
-  delay(100);
-  myservo_down.write(60);
+
 
   Serial.println("Waiting..");
   

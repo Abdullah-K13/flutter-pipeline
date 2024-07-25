@@ -39,6 +39,7 @@ import android.util.Log;
 
 public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "com.example.gym_beam/bluetooth";
+    String TAG = "MainActivity";
 
     BluetoothScanner scanner = new BluetoothScanner(this);
 
@@ -51,43 +52,41 @@ public class MainActivity extends FlutterActivity {
         new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL)
                 .setMethodCallHandler(
                         (call, result) -> {
-                            if (call.method.equals("startScan")) {
-                                Log.d("BluetoothScanner", "startScan");
-                                //BluetoothScanner scanner = new BluetoothScanner(this);
-                                scanner.startScan();
-                                result.success("Scanning started");
-                            } else if (call.method.equals("stopScan")) {
-                                Log.d("BluetoothScanner", "stopScan");
-                                //BluetoothScanner scanner = new BluetoothScanner(this);
-                                scanner.stopScan();
-                                result.success("Scanning stopped");
-                            } else if (call.method.equals("getDeviceList")) {
-                                Log.d("BluetoothScanner", "getDeviceList");
-                                //BluetoothScanner scanner = new BluetoothScanner(this);
-                                // List<BluetoothDevice> devices = scanner.getDeviceList();
-                                // List<Map<String, String>> deviceList = new ArrayList<>();
-                                // for (BluetoothDevice device : devices) {
-                                //     Map<String, String> deviceInfo = new HashMap<>();
-                                //     deviceInfo.put("name", device.getName());
-                                //     deviceInfo.put("address", device.getAddress());
-                                //     deviceList.add(deviceInfo);
-                                // }
-                                // result.success(deviceList);
-                                //BluetoothScanner scanner = new BluetoothScanner(this);
-                                result.success(scanner.getPairedDevices());
-                            } else if (call.method.equals("connectToDevice")){
-                                Log.d("BluetoothScanner", "connectToDevice");
-                                String address = call.argument("address");
-                                scanner.connectToDevice(address, success -> {
-                                    runOnUiThread(() -> result.success(success));
-                                });
-                            } else if(call.method.equals("sendData")){
-                                Log.d("BluetoothScanner", "connectToDevice");
-                                String data = call.argument("data");
-                                scanner.sendData(data);
-                                result.success("ok");
-                            } else {
-                                result.notImplemented();
+                            switch(call.method){
+                                case "startScan":
+                                    Log.d(TAG, "startScan");
+                                    scanner.startScan();
+                                    result.success("Scanning started");
+                                    break;
+
+                                case "stopScan":
+                                    Log.d(TAG, "stopScan");
+                                    scanner.stopScan();
+                                    result.success("Scanning stopped");
+                                    break;
+
+                                case "getDeviceList":
+                                    Log.d(TAG, "getDeviceList");
+                                    result.success(scanner.getDeviceList());
+                                    break;
+
+                                case "connectToDevice":
+                                    Log.d(TAG, "connectToDevice");
+                                    String address = call.argument("address");
+                                    scanner.connectToDevice(address, success -> {
+                                        runOnUiThread(() -> result.success(success));
+                                    });
+                                    break;
+
+                                case "sendData":
+                                    Log.d(TAG, "connectToDevice");
+                                    String data = call.argument("data");
+                                    scanner.sendData(data);
+                                    result.success("ok");
+                                    break;
+                                
+                                default:
+                                    result.notImplemented();
                             }
                         }
                 );
