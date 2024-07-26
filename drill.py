@@ -5,8 +5,6 @@ import time
 from smbus import SMBus
 
 class Drill():
-
-    LOG_ENABLE = True
     
     _addr = 0x8
     _bus = SMBus(1) #indicate /dev/i2c-1
@@ -14,27 +12,21 @@ class Drill():
     #configurations paramters
     _num_frames_to_average = 5
     _dete_area = 20
-    _pixel_precentage = 20
+    _pixel_precentage = 40
     _max_count = 1
-    _length_threshould = 100
+    _length_threshould = 20
     
-    _saveFileName = "drillData.txt"
-    _preTime = 0
     
     
     def __init__(self):
-        if self.LOG_ENABLE:
-            print("drill run")
+        print("drill run")
         self._cap = cv2.VideoCapture(0)
         
         if not self._cap.isOpened():
-            
             print("[Drill] Error: Could not open video capture")
             self._camready = False
         else:
             self._camready = True
-
-        self._storage = open(self._saveFileName,'a')
         
     
     #########################################################################################
@@ -62,7 +54,6 @@ class Drill():
         for i in range(num_frames_to_average):
             ret, frame = self._cap.read()
             if not ret:
-                
                 print("Error: Could not read frame")
                 break
             
@@ -85,7 +76,6 @@ class Drill():
             average_image = average_image.astype(np.uint8)
             ret = True
         else:
-            
             print("[Drill] ERROR getting average failed")
             average_image = 0
 
@@ -126,7 +116,6 @@ class Drill():
         diff = cv2.absdiff(gary_1, gary_2)
         ret, thresh = cv2.threshold(diff, thersh_lvl, 255, cv2.THRESH_BINARY)
         if not ret:
-            
             print("[Drill] ERROR _get_diff_in_frames failed")
         return thresh
     
@@ -201,15 +190,10 @@ class Drill():
     #########################################################################################
 
     def run(self, anglesList):
-        if self.LOG_ENABLE:
-            print("[Drill] runDrill start")
-        self._preTime = time.time()
+        print("[Drill] runDrill start")
         while True:
-            _pointCount = 0
             for angle in anglesList:
-                _pointCount += 1
-                if self.LOG_ENABLE:
-                    print("[Drill] angles : ", angle[0], " ", angle[1])
+                print("[Drill] angles : ", angle[0], " ", angle[1])
                 
                 #turn the servors
                 self._point_laser_to(angle)
@@ -217,13 +201,11 @@ class Drill():
                 contour_area, laser_contour = 0, 0
                 dete_a, dete_b, dete_c, dete_d = 0,0,0,0
                 dete_center = 0
-                if self.LOG_ENABLE:
-                    print("[Drill] Start point initial calibration")
+                print("[Drill] Start point initial calibration")
                 try_count = 0
                 while contour_area == 0:
                     if try_count > 5:
-                        if self.LOG_ENABLE:
-                            print("[Drill] start point calibration falied")
+                        print("[Drill] start point calibration falied")
                         break
                     try_count +=1
                     #get the clear image without the laser point
@@ -261,13 +243,11 @@ class Drill():
                 #ave_laser_draw = self._draw(ave_laser, laser_contour)
                 #cv2.imwrite((str(angle[0])+"_"+str(angle[1])+".jpeg"),ave_laser_draw)
                 #cv2.imshow('with laser', ave_laser_draw)
-                if not laser_contour:
-                    if self.LOG_ENABLE:
-                        print("[Drill] ERROR point initial calibration failed")
+                if 0 == contour_area:
+                    print("[Drill] ERROR point initial calibration failed")
                     continue
-                
-                if self.LOG_ENABLE:
-                    print("[Drill] point initial calibration is finished")
+		
+                print("[Drill] point initial calibration is finished")
                 
                 
                 # Get the bounding box coordinates of the contour
@@ -285,13 +265,11 @@ class Drill():
                     cY = int(M["m01"] / M["m00"])
                 else:
                     cX, cY = 0, 0
-                    if self.LOG_ENABLE:
-                        print("ERROR: can not find the center of laser point")
+                    print("ERROR: can not find the center of laser point")
                 
                 initial_image =  cv2.cvtColor(ave_laser[dete_b:dete_d,dete_a:dete_c], cv2.COLOR_BGR2GRAY )
                 total_pixels = initial_image.size
-                if self.LOG_ENABLE:
-                    print("[Drill] start point monitoring")
+                print("[Drill] start point monitoring")
                 
                 count = 0
                 test_bool = True
@@ -326,19 +304,14 @@ class Drill():
                             distanse = pow((LX-cX),2) + pow((LY-cY),2)
                             #line_string += str(distanse) + " "
                             #print("Distance change : " +  str(distanse))
-                            if self.LOG_ENABLE:
-                                print("[Drill] Distance is ", distanse)
+                            print("[Drill] Distance is ", distanse)
                             
                             if self._length_threshould > distanse:
                                 count+=1
                                 if count > self._max_count :
                                     #Disable_laser()
                                     print("[Drill] Detect")
-                                    _timePass = round(time.time() - self._preTime)
-                                    self._preTime = time.time()
-                                    self._storage.write("point" + str(_pointCount)+":"+str(_timePass)+"\n")
-                                    self._storage.flush()
-                                    break
+                                    break;
                                         
                             else:
                                 count = 0
@@ -356,8 +329,8 @@ class Drill():
         
         
 
-        if self.LOG_ENABLE:    
-            print("[Drill] return run")
+            
+        print("[Drill] return run")
         self._cap.release()
         cv2.destroyAllWindows()
             

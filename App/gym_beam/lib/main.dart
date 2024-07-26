@@ -160,7 +160,7 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     String _xdata = '';
     String _ydata = '';
     String data = '';
-    await _sendData("a");
+
     await _sendData(_positionCount.toString());
     for(int i=1;i<=_positionCount; i++){
 
@@ -169,7 +169,7 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
       data = 'x'+ _xdata + 'y' + _ydata;
       await _sendData(data);
     }
-    await _sendData("z");
+    await _sendData("Z");
     
   }
 
