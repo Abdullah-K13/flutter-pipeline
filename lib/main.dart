@@ -128,6 +128,11 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
         _isConnected = connected;
         print("connected : ");
         print(_isConnected);
+
+        if (_isConnected){
+          sendTime();
+        }
+
       });
     } on PlatformException catch (e) {
       print("Failed to connect to device: '${e.message}'.");
@@ -143,6 +148,21 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     }
   }
 
+  Future<void> _sendDatajason() async {
+    Map<String, dynamic> jsonObject = {
+      'name': 'John Doe',
+      'age': 30,
+      'isStudent': false
+    }
+    try {
+      await platform.invokeMethod('sendData', {'data': jsonObject});
+    } on PlatformException catch (e) {
+      print("Failed to connect to device: '${e.message}'.");
+    }
+  }
+
+
+
   //TODO : just for now
   void connectToPi(){
     print("connecting to bluetooth device");
@@ -154,6 +174,43 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     }
   }
 
+   //TODO : just for now
+  Future<void> sendTime() async{
+
+    //send the current date and time to device
+    DateTime now = DateTime.now();
+    print('Current date and time: $now');
+
+    //start signal
+    await _sendData("@");
+
+    //time command
+    await _sendData("t");
+
+    //year sub command
+    await _sendData("y");
+    await _sendData(now.year.toString());
+
+    await _sendData("M");
+    await _sendData(now.month.toString());
+
+    await _sendData("d");
+    await _sendData(now.day.toString());
+
+    await _sendData("h");
+    await _sendData(now.hour.toString());
+
+    await _sendData("m");
+    await _sendData(now.minute.toString());
+
+    await _sendData("s");
+    await _sendData(now.second.toString());
+    
+    //end signal
+    await _sendData("#");
+    
+  }
+
   //TODO : just for now
   Future<void> sendDrill() async{
 
@@ -161,7 +218,20 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     String _ydata = '';
     String data = '';
 
+    //start signal
+    await _sendData("@");
+
+    //drill command
+    await _sendData("d");
+
+    //dril name sub command
+    //await _sendData("n");
+    //await _sendData("%drill test 1%");
+
+    //drill point count
+    await _sendData("c");
     await _sendData(_positionCount.toString());
+
     for(int i=1;i<=_positionCount; i++){
 
       _xdata = _positionCM[i][0].toString();
@@ -169,7 +239,7 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
       data = 'x'+ _xdata + 'y' + _ydata;
       await _sendData(data);
     }
-    await _sendData("Z");
+    await _sendData("#");
     
   }
 
