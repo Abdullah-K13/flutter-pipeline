@@ -189,8 +189,8 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     Map<String, dynamic> data = {
       'command': 'Drill',
       'name' : "drill_test",
-      'numPoint' : _positionCount,
-      'points' : _positionCM
+      'coordinateCount' : _positionCount,
+      'cordinates' : _positionCM
     };
     String jsonString = jsonEncode(data);
 
