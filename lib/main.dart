@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'config_data.dart';
+import 'dart:convert';
 
 void main() {
   runApp(MyApp());
@@ -130,6 +131,7 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
         print(_isConnected);
 
         if (_isConnected){
+
           sendTime();
         }
 
@@ -147,20 +149,6 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
       print("Failed to connect to device: '${e.message}'.");
     }
   }
-
-  Future<void> _sendDatajason() async {
-    Map<String, dynamic> jsonObject = {
-      'name': 'John Doe',
-      'age': 30,
-      'isStudent': false
-    }
-    try {
-      await platform.invokeMethod('sendData', {'data': jsonObject});
-    } on PlatformException catch (e) {
-      print("Failed to connect to device: '${e.message}'.");
-    }
-  }
-
 
 
   //TODO : just for now
@@ -181,65 +169,44 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     DateTime now = DateTime.now();
     print('Current date and time: $now');
 
-    //start signal
-    await _sendData("@");
-
-    //time command
-    await _sendData("t");
-
-    //year sub command
-    await _sendData("y");
-    await _sendData(now.year.toString());
-
-    await _sendData("M");
-    await _sendData(now.month.toString());
-
-    await _sendData("d");
-    await _sendData(now.day.toString());
-
-    await _sendData("h");
-    await _sendData(now.hour.toString());
-
-    await _sendData("m");
-    await _sendData(now.minute.toString());
-
-    await _sendData("s");
-    await _sendData(now.second.toString());
-    
-    //end signal
-    await _sendData("#");
+    Map<String, dynamic> data = {
+      'command': 'Time',
+      'year': now.year.toString(),
+      'month': now.month.toString(),
+      'date' : now.day.toString(),
+      'hour' : now.hour.toString(),
+      'minutes' : now.minute.toString(),
+      'second' : now.second.toString()
+    };
+    String jsonString = jsonEncode(data);
+    await _sendData(jsonString);
     
   }
 
   //TODO : just for now
   Future<void> sendDrill() async{
+    _positionCM.removeAt(0);
+    Map<String, dynamic> data = {
+      'command': 'Drill',
+      'name' : "drill_test",
+      'numPoint' : _positionCount,
+      'points' : _positionCM
+    };
+    String jsonString = jsonEncode(data);
 
-    String _xdata = '';
-    String _ydata = '';
-    String data = '';
+    
+    await _sendData(jsonString);
+    
+  }
 
-    //start signal
-    await _sendData("@");
-
-    //drill command
-    await _sendData("d");
-
-    //dril name sub command
-    //await _sendData("n");
-    //await _sendData("%drill test 1%");
-
-    //drill point count
-    await _sendData("c");
-    await _sendData(_positionCount.toString());
-
-    for(int i=1;i<=_positionCount; i++){
-
-      _xdata = _positionCM[i][0].toString();
-      _ydata = _positionCM[i][1].toString();
-      data = 'x'+ _xdata + 'y' + _ydata;
-      await _sendData(data);
-    }
-    await _sendData("#");
+  Future<void> requestCurrentData() async{
+    _positionCM.removeAt(0);
+    Map<String, dynamic> data = {
+      'command': 'Request',
+      'subcommand' : "current_Data"
+    };
+    String jsonString = jsonEncode(data);
+    await _sendData(jsonString);
     
   }
 
@@ -389,7 +356,11 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
                 
               }, 
               icon: const Icon(Icons.refresh)
-              )
+              ),
+            IconButton(
+              onPressed: requestCurrentData, 
+              icon: const Icon(Icons.download)
+              ),
           ],
         ),
 

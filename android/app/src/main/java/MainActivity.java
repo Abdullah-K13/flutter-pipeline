@@ -84,6 +84,7 @@ public class MainActivity extends FlutterActivity {
                                     scanner.sendData(data);
                                     result.success("ok");
                                     break;
+
                                 
                                 default:
                                     result.notImplemented();
