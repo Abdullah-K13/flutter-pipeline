@@ -1,28 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'config_data.dart';
 import 'dart:convert';
 
+import 'core/theme.dart';
+import 'views/register_screen.dart';
+
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: BluetoothScreen(),
-    );
+    return LayoutBuilder(builder: (context, constraints) {
+      final bool isTablet = constraints.maxWidth > 600;
+      return ScreenUtilInit(
+        designSize: isTablet ? const Size(768, 1024) : const Size(375, 812),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (_, child) {
+          return MaterialApp(
+            title: 'Gym-Beam',
+            theme: themeLight(context),
+            themeMode: ThemeMode.light,
+            debugShowCheckedModeBanner: false,
+            home: const RegisterScreen(),
+          );
+        },
+      );
+    });
   }
 }
 
 class BluetoothScreen extends StatefulWidget {
+  const BluetoothScreen({super.key});
+
   @override
-  _BluetoothScreenState createState() => _BluetoothScreenState();
+  BluetoothScreenState createState() => BluetoothScreenState();
 }
 
-class _BluetoothScreenState extends State<BluetoothScreen> {
+class BluetoothScreenState extends State<BluetoothScreen> {
   //UI related Global variables
   List<List<double>> _positionList = [[]];
   List<List<int>> _positionCM = [[]];
@@ -37,7 +59,6 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
   double _deviceX = 0;
   double _deviceY = 0;
 
-
   //Bluetooth Related Global variables
   static const platform = MethodChannel('com.example.gym_beam/bluetooth');
   List<Map<String, String>> _devices = [];
@@ -46,15 +67,14 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
   //////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////     Permission Funtions     ////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////////////////////
-  
-  bool addPoint(double x, double y){
+
+  bool addPoint(double x, double y) {
     print("addPoint");
 
-    int _xcm = ((1200 /_groundHeight) * x).round();
-    int _ycm = ((1200 /_goundWidth) * y).round() - 600;
+    int _xcm = ((1200 / _groundHeight) * x).round();
+    int _ycm = ((1200 / _goundWidth) * y).round() - 600;
 
-
-    if(_ycm < 0){
+    if (_ycm < 0) {
       return false;
     }
 
@@ -78,12 +98,11 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
         status[Permission.bluetoothConnect]!.isGranted &&
         status[Permission.bluetoothScan]!.isGranted &&
         status[Permission.location]!.isGranted) {
-        print('Permissions  granted'); 
+      print('Permissions  granted');
     } else {
       print('Permissions not granted');
     }
   }
-
 
   //////////////////////////////////////////////////////////////////////////////////////////////
   /////////////////////////////     Bluetooth Funtions     /////////////////////////////////////
@@ -112,7 +131,8 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     print("ENTER _getDeviceList");
     print(_devices.length);
     try {
-      final List<dynamic> devices = await platform.invokeMethod('getDeviceList');
+      final List<dynamic> devices =
+          await platform.invokeMethod('getDeviceList');
 
       setState(() {
         _devices = devices.map((d) => Map<String, String>.from(d)).toList();
@@ -124,17 +144,16 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
 
   Future<void> _connectToDevice(String address) async {
     try {
-      final bool connected = await platform.invokeMethod('connectToDevice', {'address': address});
+      final bool connected =
+          await platform.invokeMethod('connectToDevice', {'address': address});
       setState(() {
         _isConnected = connected;
         print("connected : ");
         print(_isConnected);
 
-        if (_isConnected){
-
+        if (_isConnected) {
           sendTime();
         }
-
       });
     } on PlatformException catch (e) {
       print("Failed to connect to device: '${e.message}'.");
@@ -150,21 +169,19 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     }
   }
 
-
   //TODO : just for now
-  void connectToPi(){
+  void connectToPi() {
     print("connecting to bluetooth device");
-    for(Map<String, String> device in _devices){
+    for (Map<String, String> device in _devices) {
       print(device['name']);
-      if(device['name'] == 'raspberrypi'){
-        _connectToDevice(device['address']! );
+      if (device['name'] == 'raspberrypi') {
+        _connectToDevice(device['address']!);
       }
     }
   }
 
-   //TODO : just for now
-  Future<void> sendTime() async{
-
+  //TODO : just for now
+  Future<void> sendTime() async {
     //send the current date and time to device
     DateTime now = DateTime.now();
     print('Current date and time: $now');
@@ -173,41 +190,37 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
       'command': 'Time',
       'year': now.year.toString(),
       'month': now.month.toString(),
-      'date' : now.day.toString(),
-      'hour' : now.hour.toString(),
-      'minutes' : now.minute.toString(),
-      'second' : now.second.toString()
+      'date': now.day.toString(),
+      'hour': now.hour.toString(),
+      'minutes': now.minute.toString(),
+      'second': now.second.toString()
     };
     String jsonString = jsonEncode(data);
     await _sendData(jsonString);
-    
   }
 
   //TODO : just for now
-  Future<void> sendDrill() async{
+  Future<void> sendDrill() async {
     _positionCM.removeAt(0);
     Map<String, dynamic> data = {
       'command': 'Drill',
-      'name' : "drill_test",
-      'coordinateCount' : _positionCount,
-      'cordinates' : _positionCM
+      'name': "drill_test",
+      'coordinateCount': _positionCount,
+      'cordinates': _positionCM
     };
     String jsonString = jsonEncode(data);
 
-    
     await _sendData(jsonString);
-    
   }
 
-  Future<void> requestCurrentData() async{
+  Future<void> requestCurrentData() async {
     _positionCM.removeAt(0);
     Map<String, dynamic> data = {
       'command': 'Request',
-      'subcommand' : "current_Data"
+      'subcommand': "current_Data"
     };
     String jsonString = jsonEncode(data);
     await _sendData(jsonString);
-    
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////
@@ -218,61 +231,45 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     List<Widget> widgets = [];
 
     //touch calculating widgets
-    widgets.add(
-      GestureDetector(
+    widgets.add(GestureDetector(
       onTapUp: (details) {
         DX = details.localPosition.dx;
         DY = details.localPosition.dy;
         setState(() {
-        bool valid = addPoint(DX, DY);
-        if(valid){
-          _positionList.add([DX, DY]);
-          _positionCount += 1;
-        }
-        
+          bool valid = addPoint(DX, DY);
+          if (valid) {
+            _positionList.add([DX, DY]);
+            _positionCount += 1;
+          }
         });
-
       },
-      )
-    );
-
-    
+    ));
 
     //selected positions
-    if (_positionCount != 0){
-
-      for (int i = 1;i <= _positionCount;i++) {
-        
-        if ( i != 1){
+    if (_positionCount != 0) {
+      for (int i = 1; i <= _positionCount; i++) {
+        if (i != 1) {
           //draw lines
-          widgets.add(
-            CustomPaint(
+          widgets.add(CustomPaint(
               painter: LinePainter(
-                start: Offset(_positionList[i-1][0], _positionList[i-1][1]),
-                end: Offset(_positionList[i][0], _positionList[i][1])
-              )
-            )
-          );
+                  start:
+                      Offset(_positionList[i - 1][0], _positionList[i - 1][1]),
+                  end: Offset(_positionList[i][0], _positionList[i][1]))));
         }
-        if(i == _positionCount){
+        if (i == _positionCount) {
           print("last line");
           //draw lines
-          widgets.add(
-            CustomPaint(
+          widgets.add(CustomPaint(
               painter: LinePainter(
-                start: Offset(_deviceX, _deviceY),
-                end: Offset(_positionList[i][0], _positionList[i][1])
-              )
-            )
-          );
+                  start: Offset(_deviceX, _deviceY),
+                  end: Offset(_positionList[i][0], _positionList[i][1]))));
         }
 
         //draw the laser position
-        widgets.add(
-          Positioned(
-            left: _positionList[i][0] - (AppConfigData.laserPointDouble / 2),
-            top: _positionList[i][1] - (AppConfigData.laserPointDouble / 2),
-            child: Container(
+        widgets.add(Positioned(
+          left: _positionList[i][0] - (AppConfigData.laserPointDouble / 2),
+          top: _positionList[i][1] - (AppConfigData.laserPointDouble / 2),
+          child: Container(
               width: AppConfigData.laserPointDouble,
               height: AppConfigData.laserPointDouble,
               decoration: const BoxDecoration(
@@ -282,34 +279,29 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
               child: Center(
                 child: Text(
                   '$i',
-                  style: const TextStyle(color: AppConfigData.laserPointTextColor) ,
+                  style:
+                      const TextStyle(color: AppConfigData.laserPointTextColor),
                 ),
-              )
-            ),
-          )
-        );
-
+              )),
+        ));
       }
     }
 
     //IOT deviece widgets
-    widgets.add(
-      Positioned(
-        left: _deviceX - (AppConfigData.iotDeviceDouble / 2),
-        top: _deviceY - (AppConfigData.iotDeviceDouble / 2),
-        child: Container(
-          width: 30,
-          height: 30,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppConfigData.iotDeviceColor,
-          ),
+    widgets.add(Positioned(
+      left: _deviceX - (AppConfigData.iotDeviceDouble / 2),
+      top: _deviceY - (AppConfigData.iotDeviceDouble / 2),
+      child: Container(
+        width: 30,
+        height: 30,
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: AppConfigData.iotDeviceColor,
         ),
-      )
-    );
+      ),
+    ));
     return widgets;
   }
-
 
   @override
   void initState() {
@@ -317,13 +309,14 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     requestPermissions();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final RenderBox renderBox = _containerKey.currentContext?.findRenderObject() as RenderBox;
+      final RenderBox renderBox =
+          _containerKey.currentContext?.findRenderObject() as RenderBox;
       setState(() {
         _goundWidth = renderBox.size.width;
         _groundHeight = renderBox.size.height;
 
-        _deviceX = _goundWidth/2;
-        _deviceY = _groundHeight/2;
+        _deviceX = _goundWidth / 2;
+        _deviceY = _groundHeight / 2;
       });
     });
 
@@ -333,57 +326,39 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
         appBar: AppBar(
           title: const Text('GYM-BEAM'),
           actions: <Widget>[
             IconButton(
-              onPressed: connectToPi, 
+              onPressed: connectToPi,
               icon: const Icon(Icons.bluetooth),
-              ),
-
+            ),
+            IconButton(onPressed: sendDrill, icon: const Icon(Icons.send)),
             IconButton(
-              onPressed: sendDrill, 
-              icon: const Icon(Icons.send)
-              ),
+                onPressed: () {
+                  setState(() {
+                    _positionList = [[]];
+                    _positionCM = [[]];
+                    _positionCount = 0;
+                  });
+                },
+                icon: const Icon(Icons.refresh)),
             IconButton(
-              onPressed: (){
-                setState(() {
-                  _positionList = [[]];
-                  _positionCM = [[]];
-                  _positionCount = 0;
-                });
-                
-              }, 
-              icon: const Icon(Icons.refresh)
-              ),
-            IconButton(
-              onPressed: requestCurrentData, 
-              icon: const Icon(Icons.download)
-              ),
+                onPressed: requestCurrentData,
+                icon: const Icon(Icons.download)),
           ],
         ),
-
         body: AspectRatio(
           aspectRatio: 1.0,
           child: Container(
-            
             color: AppConfigData.groundColor,
             margin: const EdgeInsets.all(20),
-          
-            child: Stack(
-              key: _containerKey,
-              children: createPositionedWidgets() 
-            ),
+            child:
+                Stack(key: _containerKey, children: createPositionedWidgets()),
           ),
-        )
-      );
+        ));
   }
 }
-
-
-
-
 
 class LinePainter extends CustomPainter {
   final Offset start;
@@ -394,7 +369,7 @@ class LinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Color.fromARGB(255, 66, 64, 64)
+      ..color = const Color.fromARGB(255, 66, 64, 64)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
 
