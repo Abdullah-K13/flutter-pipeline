@@ -140,7 +140,7 @@ class TextFState extends State<TextF> {
           minHeight: 24.h,
           minWidth: 24.w,
         ),
-        contentPadding: EdgeInsets.all(20.sp),
+        contentPadding: EdgeInsets.all(16.sp),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.r),
           borderSide: BorderSide(

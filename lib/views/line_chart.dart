@@ -12,7 +12,7 @@ class ResponsiveUI extends StatelessWidget {
         child: AspectRatio(
           aspectRatio: 1,
           child: Container(
-            color: Colors.white,
+            color: const Color(0xffFEFBFC),
             child: CustomPaint(
               painter: GridAndDashedLinePainter(),
               child: Stack(
@@ -38,7 +38,7 @@ class ResponsiveUI extends StatelessWidget {
                     left: positions[index].dx * ScreenUtil().screenWidth.w,
                     top: positions[index].dy * ScreenUtil().screenWidth.w,
                     child: CircleAvatar(
-                      radius: ScreenUtil().screenWidth > 600 ? 25.r : 10.r,
+                      radius: ScreenUtil().screenWidth > 600 ? 25.r : 16.r,
                       backgroundColor:
                           Theme.of(context).colorScheme.secondaryContainer,
                       child: Text(
@@ -65,7 +65,7 @@ class GridAndDashedLinePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final gridPaint = Paint()
-      ..color = Colors.pink
+      ..color = const Color(0xffFF3480).withOpacity(.5)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
 

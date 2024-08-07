@@ -29,7 +29,7 @@ class LoginScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           children: [
             Container(
-              height: 150.h,
+              height: 162.h,
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.onBackground,
@@ -38,11 +38,14 @@ class LoginScreen extends StatelessWidget {
                   fit: BoxFit.cover,
                 ),
               ),
-              child: Center(
-                child: Image.asset(
-                  "assets/images/app_logo.png",
-                  height: 56.h,
-                  width: 224.w,
+              child: Padding(
+                padding: EdgeInsets.only(top: 46.h),
+                child: Center(
+                  child: Image.asset(
+                    "assets/images/app_logo.png",
+                    height: 56.h,
+                    width: 224.w,
+                  ),
                 ),
               ),
             ),
