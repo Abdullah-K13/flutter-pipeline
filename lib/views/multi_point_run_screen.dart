@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gym_beam/views/profile/screens/profile_screen.dart';
 import '../core/parent.dart';
 import '../core/primary_button.dart';
 import '../core/spacev.dart';
@@ -145,7 +146,9 @@ class MultipointRunScreen extends StatelessWidget {
                                     .textTheme
                                     .bodyMedium
                                     ?.copyWith(
-                                        color: Theme.of(context).colorScheme.secondaryContainer,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .secondaryContainer,
                                         fontWeight: FontWeight.w700),
                               )
                             ],
@@ -292,7 +295,15 @@ class MultipointRunScreen extends StatelessWidget {
                     },
                   ),
                   SpaceV(height: 36.h),
-                  const PrimaryButton(buttonText: "Detailed Analytics"),
+                  PrimaryButton(
+                    buttonText: "Detailed Analytics",
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ProfileScreen(),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             )
