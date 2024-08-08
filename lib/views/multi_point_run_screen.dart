@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gym_beam/core/parent.dart';
 import 'package:gym_beam/core/primary_button.dart';
 import 'package:gym_beam/core/spacev.dart';
-import 'package:gym_beam/views/chat_widget.dart';
+import 'package:gym_beam/views/chart_widget.dart';
 import 'package:gym_beam/views/pagination_widget.dart';
 import 'package:gym_beam/views/profile/screens/profile_screen.dart';
 import 'package:gym_beam/views/widgets/multi_line%20painter.dart';
