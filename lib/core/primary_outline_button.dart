@@ -20,7 +20,7 @@ class PrimaryOutlineButton extends StatelessWidget {
       onTap: onPressed,
       child: Center(
         child: Container(
-          height: height ?? 45.h,
+          height: height ?? 56.h,
           width: width ?? double.infinity,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.r),

@@ -32,7 +32,7 @@ class CreateExerciseScreen extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              color: Colors.white,
+              color: const Color(0xffFEFBFC),
               padding: EdgeInsets.all(16.r),
               child: Column(
                 children: [
@@ -61,7 +61,8 @@ class CreateExerciseScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Container(
-                    padding: EdgeInsets.all(13.r),
+                    height: 64.h,
+                    padding: EdgeInsets.all(7.r),
                     decoration: ShapeDecoration(
                       color: Colors.white,
                       shape: RoundedRectangleBorder(

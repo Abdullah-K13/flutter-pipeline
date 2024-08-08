@@ -22,7 +22,7 @@ class SecondryButton extends StatelessWidget {
       onTap: onPressed,
       child: Center(
         child: Container(
-          height: height ?? 45.h,
+          height: height ?? 56.h,
           width: width ?? double.infinity,
           decoration: BoxDecoration(
             color: const Color(0xffFFFFFF),
