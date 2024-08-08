@@ -89,7 +89,7 @@ class GridAndDashedLinePainter extends CustomPainter {
     for (int i = 0; i < 6; i++) {
       // Draw X-axis labels at the top
       final xTextSpan = TextSpan(
-        text: '${i + 1}m',
+        text: '1m',
         style: TextStyle(color: Colors.grey, fontSize: 12.sp),
       );
       textPainter.text = xTextSpan;
@@ -104,7 +104,7 @@ class GridAndDashedLinePainter extends CustomPainter {
     for (int i = 0; i < 6; i++) {
       // Draw Y-axis labels on the left
       final yTextSpan = TextSpan(
-        text: '${i + 1}m',
+        text: '1m',
         style: TextStyle(color: Colors.grey, fontSize: 12.sp),
       );
       textPainter.text = yTextSpan;
