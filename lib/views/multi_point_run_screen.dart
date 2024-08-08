@@ -48,20 +48,19 @@ class MultipointRunScreen extends StatelessWidget {
             backgroundColor: Colors.white,
             centerTitle: false,
             title: Text(
-              "Create Exercise",
+              "Multi Point Run",
               style: Theme.of(context)
                   .textTheme
                   .titleLarge
-                  ?.copyWith(fontSize: 18.sp),
+                  ?.copyWith(fontSize: 18.sp, color: Colors.pink),
             ),
           )),
       child: SingleChildScrollView(
         child: Column(
           children: [
             CustomPaint(
-              size: const Size(200, 200),
-              painter:
-                  MultiGridAndDashedLinePainter(), // Use the new painter here
+              size: Size(300.w, 300.h), // Increase the size of the graph
+              painter: MultiGridAndDashedLinePainter(),
             ),
             SpaceV(height: 19.h),
             Row(

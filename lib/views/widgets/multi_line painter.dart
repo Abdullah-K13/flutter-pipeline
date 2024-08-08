@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'dart:math';
 
 class MultiGridAndDashedLinePainter extends CustomPainter {
   @override
@@ -56,35 +57,77 @@ class MultiGridAndDashedLinePainter extends CustomPainter {
                   textPainter.height / 2));
     }
 
-    // Draw circle
-    final radius = size.width / 2;
+    // Draw circle with increased transparency
+    final radius = size.width / 2.2;
     final center = Offset(size.width / 2, size.height / 2);
     final paintCircle = Paint()
-      ..color = Colors.teal.withOpacity(0.5)
+      ..color = Colors.teal.withOpacity(0.2)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, radius, paintCircle);
 
-    // Draw center point
-    final paintCenter = Paint()
+    // Draw circle outline covering 4/5 of the circumference
+    final paintOutline = Paint()
+      ..color = Colors.teal
+      ..strokeWidth = 3.0
+      ..style = PaintingStyle.stroke;
+
+    final rect = Rect.fromCircle(center: center, radius: radius);
+    const startAngle = -0.5 * pi;
+    const sweepAngle = 1.6 * pi;
+
+    canvas.drawArc(rect, startAngle, sweepAngle, false, paintOutline);
+
+    // Draw starting pointer on the outline
+    final endAngle = startAngle + sweepAngle;
+    final startPoint = Offset(
+      center.dx + radius * cos(endAngle),
+      center.dy + radius * sin(endAngle),
+    );
+    final paintStartPointer = Paint()
+      ..color = Colors.teal
+      ..style = PaintingStyle.fill;
+
+    canvas.drawCircle(startPoint, 6.w, paintStartPointer);
+    final paintStartPointerOutline = Paint()
+      ..color = Colors.white
+      ..strokeWidth = 2.0
+      ..style = PaintingStyle.stroke;
+    canvas.drawCircle(startPoint, 6.w, paintStartPointerOutline);
+
+    // Draw the pink outline circle with increased transparency
+    final pinkOutlinePaint = Paint()
+      ..color = Colors.pink.withOpacity(0.5)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3.w;
+
+    final outlineRadius = 20.w;
+
+    canvas.drawCircle(center, outlineRadius, pinkOutlinePaint);
+
+    // Draw the inner circle with pink background and "0"
+    final pinkBackgroundPaint = Paint()
       ..color = Colors.pink
       ..style = PaintingStyle.fill;
 
-    canvas.drawCircle(center, 10.w, paintCenter);
+    final innerCircleRadius = 14.w;
+
+    canvas.drawCircle(center, innerCircleRadius, pinkBackgroundPaint);
+
     _drawText(canvas, center, '0', Colors.white);
 
     // Define the points and lines
     final points = [
-      Offset(center.dx, center.dy - radius * 0.7), // Point 1
-      Offset(center.dx - radius * 0.7, center.dy), // Point 2
-      Offset(center.dx, center.dy + radius * 0.7), // Point 3
-      Offset(center.dx + radius * 0.7, center.dy), // Point 4
+      Offset(center.dx, center.dy - radius * 0.6), // Point 1
+      Offset(center.dx - radius * 0.6, center.dy), // Point 2
+      Offset(center.dx, center.dy + radius * 0.6), // Point 3
+      Offset(center.dx + radius * 0.6, center.dy), // Point 4
       Offset(center.dx + radius * 0.3, center.dy - radius * 0.4), // Point 5
     ];
 
-    // Draw dashed lines connecting points sequentially
+    // Draw dashed lines connecting points sequentially with increased transparency
     final dashedLinePaint = Paint()
-      ..color = Colors.pink
+      ..color = Colors.pink.withOpacity(0.5)
       ..strokeWidth = 2.0
       ..style = PaintingStyle.stroke;
 
@@ -94,8 +137,12 @@ class MultiGridAndDashedLinePainter extends CustomPainter {
     }
 
     // Draw points
+    final paintPoint = Paint()
+      ..color = Colors.teal
+      ..style = PaintingStyle.fill;
+
     for (int i = 0; i < points.length; i++) {
-      canvas.drawCircle(points[i], 10.w, paintCircle);
+      canvas.drawCircle(points[i], 10.w, paintPoint);
       _drawText(canvas, points[i], (i + 1).toString(), Colors.white);
     }
   }
@@ -122,6 +169,7 @@ class MultiGridAndDashedLinePainter extends CustomPainter {
     final textStyle = TextStyle(
       color: color,
       fontSize: 14.sp,
+      fontWeight: FontWeight.bold,
     );
     final textSpan = TextSpan(
       text: text,
