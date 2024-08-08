@@ -95,9 +95,18 @@ class RegisterScreen extends StatelessWidget {
                     },
                     {"icon": "assets/icons/tennis_icon.svg", "label": "Tennis"},
                     {
+                      "icon": "assets/icons/baseball_icon.svg",
+                      "label": "Baseball"
+                    },
+                    {
                       "icon": "assets/icons/badminton_icon.svg",
                       "label": "Badminton"
                     },
+                    {
+                      "icon": "assets/icons/cricket_icon.svg",
+                      "label": "Cricket"
+                    },
+                    {"icon": "assets/icons/hockey_icon.svg", "label": "Hockey"},
                   ]
                       .map(
                         (e) => Container(

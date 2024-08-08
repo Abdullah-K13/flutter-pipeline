@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
+import 'package:gym_beam/views/profile/screens/edit_profile.dart';
 import '../../../core/spacev.dart';
 
 class UserInfoWidget extends StatelessWidget {
-  const UserInfoWidget({super.key});
+  final bool isEditProfile;
+  const UserInfoWidget({super.key, required this.isEditProfile});
 
   @override
   Widget build(BuildContext context) {
@@ -40,31 +41,41 @@ class UserInfoWidget extends StatelessWidget {
                 ?.copyWith(fontSize: 14.sp),
           ),
           SpaceV(height: 7.h),
-          Container(
-            width: 143.w,
-            height: 48.h,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: ShapeDecoration(
-              color: const Color(0x0CFF3480),
-              shape: RoundedRectangleBorder(
-                side: const BorderSide(width: 1, color: Color(0x19FF3480)),
-                borderRadius: BorderRadius.circular(10),
+          if (isEditProfile)
+            InkWell(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const EditProfileScreen(),
+                ),
+              ),
+              child: Container(
+                width: 143.w,
+                height: 48.h,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: ShapeDecoration(
+                  color: const Color(0x0CFF3480),
+                  shape: RoundedRectangleBorder(
+                    side: const BorderSide(width: 1, color: Color(0x19FF3480)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    SvgPicture.asset("assets/icons/edit_icon.svg"),
+                    SizedBox(width: 9.w),
+                    Text(
+                      "Edit Profile",
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall
+                          ?.copyWith(fontSize: 16.sp),
+                    )
+                  ],
+                ),
               ),
             ),
-            child: Row(
-              children: [
-                SvgPicture.asset("assets/icons/edit_icon.svg"),
-                SizedBox(width: 9.w),
-                Text(
-                  "Edit Profile",
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleSmall
-                      ?.copyWith(fontSize: 16.sp),
-                )
-              ],
-            ),
-          ),
           SpaceV(height: 25.h),
           Row(
             children: [
