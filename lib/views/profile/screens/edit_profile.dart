@@ -30,7 +30,7 @@ class EditProfileScreen extends StatelessWidget {
           actions: [
             IconButton(
               onPressed: () {},
-              icon: SvgPicture.asset("assets/icons/settings.svg"),
+              icon: SvgPicture.asset("assets/icons/save_icon.svg"),
             )
           ],
         ),

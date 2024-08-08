@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'config_data.dart';
 import 'dart:convert';
-
 import 'core/theme.dart';
 import 'views/register_screen.dart';
 
