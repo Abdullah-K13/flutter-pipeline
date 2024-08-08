@@ -16,10 +16,10 @@ class CompanyInfoWidget extends StatelessWidget {
             padding: EdgeInsets.all(16.r),
             child: Row(
               children: [
-                SvgPicture.asset("assets/icons/physical_attributes_icon.svg"),
+                SvgPicture.asset("assets/icons/company_info_icon.svg"),
                 SizedBox(width: 4.w),
                 Text(
-                  'Physical Attributes',
+                  'Company Info',
                   textAlign: TextAlign.center,
                   style: Theme.of(context)
                       .textTheme
@@ -36,13 +36,13 @@ class CompanyInfoWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Height',
+                  'Name',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontSize: 14.sp, color: const Color(0xff95989C)),
                 ),
                 Text(
-                  '5.6',
+                  'Lorupipsum',
                   textAlign: TextAlign.right,
                   style: Theme.of(context)
                       .textTheme
@@ -58,13 +58,13 @@ class CompanyInfoWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Weight',
+                  'Number',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontSize: 14.sp, color: const Color(0xff95989C)),
                 ),
                 Text(
-                  '10lbs',
+                  '9876543210',
                   textAlign: TextAlign.right,
                   style: Theme.of(context)
                       .textTheme
@@ -80,13 +80,13 @@ class CompanyInfoWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Body fat Percentage',
+                  'Vat Registration Number',
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontSize: 14.sp, color: const Color(0xff95989C)),
                 ),
                 Text(
-                  '65',
+                  '12344444',
                   textAlign: TextAlign.right,
                   style: Theme.of(context)
                       .textTheme
@@ -96,28 +96,6 @@ class CompanyInfoWidget extends StatelessWidget {
               ],
             ),
           ),
-          Padding(
-            padding: EdgeInsets.all(16.r),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Muscle Mass',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontSize: 14.sp, color: const Color(0xff95989C)),
-                ),
-                Text(
-                  '120',
-                  textAlign: TextAlign.right,
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontSize: 14.sp),
-                ),
-              ],
-            ),
-          )
         ],
       ),
     );

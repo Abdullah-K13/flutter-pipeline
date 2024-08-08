@@ -5,10 +5,13 @@ import 'package:gym_beam/core/parent.dart';
 import 'package:gym_beam/core/spacev.dart';
 import 'package:gym_beam/views/profile/widgets/address_info.dart';
 import 'package:gym_beam/views/profile/widgets/company_address.dart';
+import 'package:gym_beam/views/profile/widgets/company_info.dart';
 import 'package:gym_beam/views/profile/widgets/device_details.dart';
 import 'package:gym_beam/views/profile/widgets/physical_attributes.dart';
 import 'package:gym_beam/views/profile/widgets/preferences.dart';
+import 'package:gym_beam/views/profile/widgets/sports.dart';
 
+import '../widgets/health_metrics.dart';
 import '../widgets/profile_info_widget.dart';
 import '../widgets/user_info.dart';
 
@@ -41,7 +44,9 @@ class ProfileScreen extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            const UserInfoWidget(),
+            const UserInfoWidget(
+              isEditProfile: true,
+            ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.w),
               child: const Column(
@@ -51,13 +56,20 @@ class ProfileScreen extends StatelessWidget {
                   SpaceV(),
                   AddressInfoWidget(),
                   SpaceV(),
-                  CompanyAddressWidget(),
+                  SportsWidget(),
                   SpaceV(),
                   DeviceDetailsWidget(),
                   SpaceV(),
                   PreferencesWidget(),
                   SpaceV(),
                   PhysicalAttributesWidget(),
+                  SpaceV(),
+                  CompanyInfoWidget(),
+                  SpaceV(),
+                  CompanyAddressWidget(),
+                  SpaceV(),
+                  HealthMetricsWidget(),
+                  SpaceV(),
                 ],
               ),
             )
