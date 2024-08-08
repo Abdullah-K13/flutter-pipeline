@@ -15,7 +15,7 @@ class ResponsiveUI extends StatelessWidget {
             builder: (context, constraints) {
               final width = constraints.maxWidth;
               final height = constraints.maxHeight;
-              final circleRadius = 20.r;
+              final circleRadius = 15.r; // Reduced the radius of circles
               final positions = [
                 Offset(width * 1 / 6, height * 1 / 6),
                 Offset(width * 1 / 6, height * 2 / 6),
@@ -24,35 +24,50 @@ class ResponsiveUI extends StatelessWidget {
                 Offset(width * 1 / 6, height * 4 / 6),
                 Offset(width * 1 / 6, height * 5 / 6),
                 Offset(width * 2 / 6, height * 5 / 6),
-                Offset(width * 2 / 6, height * 6 / 6),
-                Offset(width * 5 / 6, height * 6 / 6),
+                Offset(width * 2 / 6,
+                    height - circleRadius / 2), // Adjusted position for 8
+                Offset(width * 5 / 6 - circleRadius / 2,
+                    height - circleRadius / 2), // Adjusted position for 9
               ];
+
+              final pinkPosition = Offset(width * 3 / 6,
+                  -circleRadius / 2); // Adjusted position for the pink circle
 
               return Container(
                 color: Colors.white,
                 child: CustomPaint(
                   painter: GridAndDashedLinePainter(),
                   child: Stack(
-                    children: positions.map((position) {
-                      return Positioned(
-                        left: position.dx -
-                            circleRadius, // Centering the circle horizontally
-                        top: position.dy -
-                            circleRadius, // Centering the circle vertically
+                    children: [
+                      ...positions.map((position) {
+                        return Positioned(
+                          left: position.dx - circleRadius,
+                          top: position.dy - circleRadius,
+                          child: CircleAvatar(
+                            radius: circleRadius,
+                            backgroundColor: Theme.of(context)
+                                .colorScheme
+                                .secondaryContainer,
+                            child: Text(
+                              '${positions.indexOf(position) + 1}',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12.sp, // Adjusted font size
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      Positioned(
+                        left: pinkPosition.dx - circleRadius,
+                        top: pinkPosition.dy,
                         child: CircleAvatar(
                           radius: circleRadius,
                           backgroundColor:
-                              Theme.of(context).colorScheme.secondaryContainer,
-                          child: Text(
-                            '${positions.indexOf(position) + 1}',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16.sp,
-                            ),
-                          ),
+                              Colors.pink, // Pink color for the circle
                         ),
-                      );
-                    }).toList(),
+                      ),
+                    ],
                   ),
                 ),
               );

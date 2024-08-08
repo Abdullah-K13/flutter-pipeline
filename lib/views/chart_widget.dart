@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gym_beam/core/spacev.dart';
 
 class ChartWidget extends StatelessWidget {
   const ChartWidget({super.key});
@@ -22,9 +23,10 @@ class ChartWidget extends StatelessWidget {
         ],
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SizedBox(
-            height: 171.h,
+            height: 113.h,
             child: Stack(
               children: [
                 LineChart(
@@ -97,11 +99,11 @@ class ChartWidget extends StatelessWidget {
                 CustomPaint(
                   size: Size(300, 171.h), // Specify the same size as the chart
                   painter: ValuesPainter([
-                    FlSpot(1, 1.2),
-                    FlSpot(2, 1.5),
-                    FlSpot(3, 1.3),
-                    FlSpot(4, 1.4),
-                    FlSpot(5, 1.2),
+                    const FlSpot(1, 1.2),
+                    const FlSpot(2, 1.5),
+                    const FlSpot(3, 1.3),
+                    const FlSpot(4, 1.4),
+                    const FlSpot(5, 1.2),
                   ]),
                 ),
               ],
@@ -123,6 +125,35 @@ class ChartWidget extends StatelessWidget {
               ],
             ),
           ),
+          const SpaceV(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                height: 36.h,
+                width: 36.w,
+                decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                    borderRadius: BorderRadius.circular(8.r)),
+                child: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(width: 24.w),
+              Container(
+                height: 36.h,
+                width: 36.w,
+                decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.secondary,
+                    borderRadius: BorderRadius.circular(8.r)),
+                child: const Icon(
+                  Icons.arrow_forward_ios,
+                  color: Colors.white,
+                ),
+              )
+            ],
+          )
         ],
       ),
     );
@@ -134,7 +165,7 @@ class ChartWidget extends StatelessWidget {
       child: Text(
         text,
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.grey,
+              color: const Color(0xff212121).withOpacity(.5),
               fontSize: 12.sp,
             ),
       ),
@@ -171,7 +202,7 @@ class ValuesPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final textStyle = TextStyle(
-      color: Colors.black,
+      color: Colors.grey,
       fontSize: 12.sp,
       fontWeight: FontWeight.bold,
     );

@@ -141,7 +141,7 @@ class CreateExerciseScreen extends StatelessWidget {
                               Row(
                                 children: [
                                   Image.asset(
-                                    "assets/icons/distance_icon.png",
+                                    "assets/icons/distance_circle.png",
                                     height: 20.h,
                                     width: 20.w,
                                   ),
