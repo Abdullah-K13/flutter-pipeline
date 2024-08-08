@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:gym_beam/views/line_chart.dart';
 import '../core/parent.dart';
 import '../core/primary_button.dart';
 import '../core/primary_outline_button.dart';
 import '../core/spacev.dart';
-import 'line_chart.dart';
 import 'multi_point_run_screen.dart';
 
 class CreateExerciseScreen extends StatelessWidget {
@@ -15,18 +15,19 @@ class CreateExerciseScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Parent(
       appBar: PreferredSize(
-          preferredSize: Size.fromHeight(50.h),
-          child: AppBar(
-            backgroundColor: Colors.white,
-            centerTitle: false,
-            title: Text(
-              "Create Exercise",
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontSize: 18.sp),
-            ),
-          )),
+        preferredSize: Size.fromHeight(50.h),
+        child: AppBar(
+          backgroundColor: Colors.white,
+          centerTitle: false,
+          title: Text(
+            "Create Exercise",
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.copyWith(fontSize: 18.sp),
+          ),
+        ),
+      ),
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -38,13 +39,15 @@ class CreateExerciseScreen extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {},
                     style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xffFFFFFF),
-                        elevation: .1),
+                      backgroundColor: const Color(0xffFFFFFF),
+                      elevation: .1,
+                    ),
                     child: Text(
                       "Create a Drill",
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.secondary,
-                          fontSize: 14.sp),
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontSize: 14.sp,
+                          ),
                     ),
                   ),
                   const SpaceV(),
@@ -113,10 +116,11 @@ class CreateExerciseScreen extends StatelessWidget {
                                         .textTheme
                                         .titleMedium
                                         ?.copyWith(
-                                            fontSize: 18.sp,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary),
+                                          fontSize: 18.sp,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -148,10 +152,11 @@ class CreateExerciseScreen extends StatelessWidget {
                                         .textTheme
                                         .titleMedium
                                         ?.copyWith(
-                                            fontSize: 18.sp,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary),
+                                          fontSize: 18.sp,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -188,13 +193,13 @@ class CreateExerciseScreen extends StatelessWidget {
                           ),
                           buttonText: "Start a Drill",
                         ),
-                      )
+                      ),
                     ],
                   ),
                   SpaceV(height: 50.h),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

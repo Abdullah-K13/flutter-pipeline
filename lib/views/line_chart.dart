@@ -11,49 +11,52 @@ class ResponsiveUI extends StatelessWidget {
       child: Center(
         child: AspectRatio(
           aspectRatio: 1,
-          child: Container(
-            color: Colors.white,
-            child: CustomPaint(
-              painter: GridAndDashedLinePainter(),
-              child: Stack(
-                children: List.generate(6, (index) {
-                  final positions = ScreenUtil().screenWidth > 600
-                      ? [
-                          const Offset(0.14, 0.04),
-                          const Offset(0.14, 0.23),
-                          const Offset(0.65, 0.23),
-                          const Offset(0.14, 0.57),
-                          const Offset(0.40, 0.75),
-                          const Offset(0.64, 0.57),
-                        ]
-                      : [
-                          const Offset(0.12, 0.04),
-                          const Offset(0.12, 0.20),
-                          const Offset(0.57, 0.20),
-                          const Offset(0.12, 0.48),
-                          const Offset(0.34, 0.62),
-                          const Offset(0.54, 0.50),
-                        ];
-                  return Positioned(
-                    left: positions[index].dx * ScreenUtil().screenWidth.w,
-                    top: positions[index].dy * ScreenUtil().screenWidth.w,
-                    child: CircleAvatar(
-                      radius: ScreenUtil().screenWidth > 600 ? 25.r : 10.r,
-                      backgroundColor:
-                          Theme.of(context).colorScheme.secondaryContainer,
-                      child: Text(
-                        (index + 1).toString(),
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize:
-                              ScreenUtil().screenWidth > 600 ? 20.sp : 14.sp,
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final width = constraints.maxWidth;
+              final height = constraints.maxHeight;
+              final circleRadius = 20.r;
+              final positions = [
+                Offset(width * 1 / 6, height * 1 / 6),
+                Offset(width * 1 / 6, height * 2 / 6),
+                Offset(width * 2 / 6, height * 2 / 6),
+                Offset(width * 2 / 6, height * 3 / 6),
+                Offset(width * 1 / 6, height * 4 / 6),
+                Offset(width * 1 / 6, height * 5 / 6),
+                Offset(width * 2 / 6, height * 5 / 6),
+                Offset(width * 2 / 6, height * 6 / 6),
+                Offset(width * 5 / 6, height * 6 / 6),
+              ];
+
+              return Container(
+                color: Colors.white,
+                child: CustomPaint(
+                  painter: GridAndDashedLinePainter(),
+                  child: Stack(
+                    children: positions.map((position) {
+                      return Positioned(
+                        left: position.dx -
+                            circleRadius, // Centering the circle horizontally
+                        top: position.dy -
+                            circleRadius, // Centering the circle vertically
+                        child: CircleAvatar(
+                          radius: circleRadius,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.secondaryContainer,
+                          child: Text(
+                            '${positions.indexOf(position) + 1}',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.sp,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  );
-                }),
-              ),
-            ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),
@@ -78,26 +81,42 @@ class GridAndDashedLinePainter extends CustomPainter {
     }
 
     final textPainter = TextPainter(
-      text: TextSpan(
-        text: '1m',
-        style: TextStyle(color: Colors.grey, fontSize: 12.sp),
-      ),
+      textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,
     );
 
-    // Draw text outside the grid, centered on the grid lines
-    for (int i = 0; i <= 6; i++) {
-      // Draw text at top outside grid
+    // Draw text centered within the grid boxes
+    for (int i = 0; i < 6; i++) {
+      // Draw X-axis labels at the top
+      final xTextSpan = TextSpan(
+        text: '${i + 1}m',
+        style: TextStyle(color: Colors.grey, fontSize: 12.sp),
+      );
+      textPainter.text = xTextSpan;
       textPainter.layout();
       textPainter.paint(
-          canvas, Offset(size.width / 6 * i - textPainter.width / 2, -20.h));
+          canvas,
+          Offset(
+              (size.width / 6) * i + (size.width / 12) - textPainter.width / 2,
+              -16.h));
     }
 
-    for (int i = 0; i <= 6; i++) {
-      // Draw text at left outside grid
+    for (int i = 0; i < 6; i++) {
+      // Draw Y-axis labels on the left
+      final yTextSpan = TextSpan(
+        text: '${i + 1}m',
+        style: TextStyle(color: Colors.grey, fontSize: 12.sp),
+      );
+      textPainter.text = yTextSpan;
       textPainter.layout();
       textPainter.paint(
-          canvas, Offset(-20.w, size.height / 6 * i - textPainter.height / 2));
+          canvas,
+          Offset(
+              -24.w,
+              size.height -
+                  (size.height / 6) * i -
+                  (size.height / 12) -
+                  textPainter.height / 2));
     }
 
     final dashedLinePaint = Paint()
@@ -106,13 +125,15 @@ class GridAndDashedLinePainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     final path = Path()
-      ..moveTo(size.width * 0.2, size.height * 0.1)
-      ..lineTo(size.width * 0.2, size.height * 0.3)
-      ..lineTo(size.width * 0.8, size.height * 0.3)
-      ..lineTo(size.width * 0.5, size.height * 0.5)
-      ..lineTo(size.width * 0.2, size.height * 0.7)
-      ..lineTo(size.width * 0.5, size.height * 0.9)
-      ..lineTo(size.width * 0.8, size.height * 0.7);
+      ..moveTo(size.width * 1 / 6, size.height * 1 / 6)
+      ..lineTo(size.width * 1 / 6, size.height * 2 / 6)
+      ..lineTo(size.width * 2 / 6, size.height * 2 / 6)
+      ..lineTo(size.width * 2 / 6, size.height * 3 / 6)
+      ..lineTo(size.width * 1 / 6, size.height * 4 / 6)
+      ..lineTo(size.width * 1 / 6, size.height * 5 / 6)
+      ..lineTo(size.width * 2 / 6, size.height * 5 / 6)
+      ..lineTo(size.width * 2 / 6, size.height * 6 / 6)
+      ..lineTo(size.width * 5 / 6, size.height * 6 / 6);
 
     final dashedPath = _createDashedPath(path, 10.w);
     canvas.drawPath(dashedPath, dashedLinePaint);
