@@ -4,7 +4,21 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gym_beam/core/spacev.dart';
 
 class ChartWidget extends StatelessWidget {
-  const ChartWidget({super.key});
+  List<FlSpot> RunDetails =[
+    FlSpot(0, 0),
+    FlSpot(1, 0),
+    FlSpot(2, 0),
+    FlSpot(3, 0),
+    FlSpot(4, 0),
+    FlSpot(5, 0),
+    FlSpot(6, 0),
+  ];
+
+  ChartWidget({
+    Key? key,
+    required this.RunDetails,
+  }) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {

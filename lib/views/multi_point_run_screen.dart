@@ -9,9 +9,59 @@ import 'package:gym_beam/views/chart_widget.dart';
 import 'package:gym_beam/views/pagination_widget.dart';
 import 'package:gym_beam/views/profile/screens/profile_screen.dart';
 import 'package:gym_beam/views/widgets/multi_line%20painter.dart';
+import 'package:fl_chart/fl_chart.dart';
+import '../bluetooth_API.dart';
 
-class MultipointRunScreen extends StatelessWidget {
-  const MultipointRunScreen({super.key});
+class MultipointRunScreen extends StatefulWidget {
+  MultipointRunScreen({super.key});
+
+  @override
+  State<MultipointRunScreen> createState() => _MultipointRunScreenState();
+}
+
+class _MultipointRunScreenState extends State<MultipointRunScreen> {
+
+  BluAPI blueapi = BluAPI();
+
+
+  List<List<FlSpot>> allRunsData = [];
+  List<FlSpot> selectedRun =[
+    FlSpot(0, 0),
+    FlSpot(1, 0),
+    FlSpot(2, 0),
+    FlSpot(3, 0),
+    FlSpot(4, 0),
+    FlSpot(5, 0),
+    FlSpot(6, 0),
+  ];
+
+  void receiveBlueData(Map<String, dynamic> jsonData){
+    print("ENTER receiveBlueData");
+    print(jsonData["type"]);
+    print(jsonData["name"]);
+    print(jsonData["coordinateCount"]);
+    
+    List<FlSpot> newrun = [];
+
+    for(int i=0;i<jsonData["coordinateCount"];i++){
+      newrun.add(FlSpot(i.toDouble(), jsonData["point$i"]));
+    }
+
+    setState(() {
+      allRunsData.add(newrun);
+      selectedRun = newrun;
+    });
+
+
+  }
+
+
+  @override
+  void initState() {
+    super.initState();
+    
+    blueapi.registerCallback(receiveBlueData);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,11 +122,17 @@ class MultipointRunScreen extends StatelessWidget {
                   children: [
                     const PaginationWidget(),
                     SpaceV(height: 32.h),
+                    ////////////////////////////////////////////////////////////////////////////////////
+                    //////////////// Play Area [Start]
+                    ///////////////////////////////////////////////////////////////////////////////////
                     CustomPaint(
                       size: Size(310.w, 340.h),
                       painter:
                           MultiGridAndDashedLinePainter(), // Use the new painter here
                     ),
+                    ////////////////////////////////////////////////////////////////////////////////////
+                    //////////////// Play Area [End]
+                    ///////////////////////////////////////////////////////////////////////////////////
                   ],
                 ),
               ),
@@ -85,6 +141,9 @@ class MultipointRunScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     const SpaceV(),
+                    ///////////////////////////////////////////////////////////////////////////
+                    /////////////////// Spped Details - Logo  [Start]
+                    //////////////////////////////////////////////////////////////////////////
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -155,6 +214,11 @@ class MultipointRunScreen extends StatelessWidget {
                               )
                             ],
                           ),
+                          ///////////////////////////////////////////////////////////////////////////
+                          /////////////////// Spped Details - Logo  [END]
+                  
+                          /////////////////// Spped Details [Start]
+                          //////////////////////////////////////////////////////////////////////////
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
@@ -260,8 +324,11 @@ class MultipointRunScreen extends StatelessWidget {
                         )
                       ],
                     ),
+                    //////////////////////////////////////////////////////////////////////////
+                    /////////////////// Spped Details [end]
+                    //////////////////////////////////////////////////////////////////////////
                     SpaceV(height: 19.h),
-                    const ChartWidget(),
+                    ChartWidget(RunDetails: selectedRun),
                     const SpaceV(),
                   ],
                 ),

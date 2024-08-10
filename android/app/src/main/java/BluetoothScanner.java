@@ -25,6 +25,14 @@ import java.util.List;
 
 import android.util.Log;
 
+import io.flutter.embedding.android.FlutterActivity;
+import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.plugin.common.MethodCall;
+import io.flutter.plugin.common.MethodChannel;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+
 public class BluetoothScanner implements Runnable {
 
     String TAG = "BluettothScanner";
@@ -41,6 +49,8 @@ public class BluetoothScanner implements Runnable {
     private BluetoothSocket bluetoothSocket;
     private InputStream inputStream;
     private OutputStream outputStream;
+    private MethodChannel methodChannel;
+    private Handler mainHandler = new Handler(Looper.getMainLooper());
 
     private byte[] buffer; // Buffer store for the stream
 
@@ -182,7 +192,16 @@ public class BluetoothScanner implements Runnable {
     private void handleReceivedData(String data) {
         // Process the received data (update UI, save to file, etc.)
         // Ensure you run any UI updates on the main thread
-        Log.d("BluetoothData", "Received: " + data);
+        Log.d(TAG, "Received: " + data);
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (methodChannel != null) {
+                    Log.d(TAG, "calling method");
+                    methodChannel.invokeMethod("onBluetoothDataReceived", data);
+                }
+            }
+        });
     }
     
     

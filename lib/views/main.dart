@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../core/theme.dart';
 import 'register_screen.dart';
+import 'Bluetooth_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,7 +27,7 @@ class MyApp extends StatelessWidget {
             theme: themeLight(context),
             themeMode: ThemeMode.light,
             debugShowCheckedModeBanner: false,
-            home: const RegisterScreen(),
+            home: BluetoothDevicePage(),
           );
         },
       );

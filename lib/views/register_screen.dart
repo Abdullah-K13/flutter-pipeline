@@ -7,6 +7,35 @@ import '../core/primary_button.dart';
 import '../core/spacev.dart';
 import '../core/text_field.dart';
 import 'login_screen.dart';
+import '../core/theme.dart';
+
+
+class RegisterForm extends StatelessWidget {
+  const RegisterForm({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      final bool isTablet = constraints.maxWidth > 600;
+
+      return ScreenUtilInit(
+        designSize: isTablet ? const Size(768, 1024) : const Size(375, 812),
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (_, child) {
+          return MaterialApp(
+            title: 'Gym-Beam',
+            theme: themeLight(context),
+            themeMode: ThemeMode.light,
+            debugShowCheckedModeBanner: false,
+            home: const RegisterScreen(),
+            //home: BluetoothDevicePage(),
+          );
+        },
+      );
+    });
+  }
+}
 
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});

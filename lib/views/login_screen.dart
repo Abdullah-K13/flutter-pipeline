@@ -81,7 +81,7 @@ class LoginScreen extends StatelessWidget {
                     onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const CreateExerciseScreen(),
+                        builder: (_) =>  CreateExerciseScreen(),
                       ),
                     ),
                   ),
@@ -97,7 +97,7 @@ class LoginScreen extends StatelessWidget {
                     onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const CreateExerciseScreen(),
+                        builder: (_) =>  CreateExerciseScreen(),
                       ),
                     ),
                     icon: Image.asset(
@@ -112,7 +112,7 @@ class LoginScreen extends StatelessWidget {
                     onPressed: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const CreateExerciseScreen(),
+                        builder: (_) =>  CreateExerciseScreen(),
                       ),
                     ),
                     icon: Image.asset(
