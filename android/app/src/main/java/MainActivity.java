@@ -40,6 +40,7 @@ import android.util.Log;
 public class MainActivity extends FlutterActivity {
     private static final String CHANNEL = "com.example.gym_beam/bluetooth";
     String TAG = "MainActivity";
+	MethodChannel methodChannel;							
 
     BluetoothScanner scanner = new BluetoothScanner(this);
 
@@ -49,8 +50,11 @@ public class MainActivity extends FlutterActivity {
     public void configureFlutterEngine(@NonNull FlutterEngine flutterEngine) {
         super.configureFlutterEngine(flutterEngine);
 
-        new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL)
-                .setMethodCallHandler(
+        methodChannel = new MethodChannel(flutterEngine.getDartExecutor().getBinaryMessenger(), CHANNEL);
+        
+        scanner.addLinkToFlutter(methodChannel);
+
+        methodChannel.setMethodCallHandler(
                         (call, result) -> {
                             switch(call.method){
                                 case "startScan":

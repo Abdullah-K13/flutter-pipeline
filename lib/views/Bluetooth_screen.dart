@@ -88,7 +88,9 @@ class _BluetoothDevicePageState extends State<BluetoothDevicePage> {
 
     }
 
+    //TODO for testing
     if(connected){
+    //if (true){
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => RegisterScreen()),
@@ -126,7 +128,7 @@ class _BluetoothDevicePageState extends State<BluetoothDevicePage> {
     super.initState();
 
     requestPermissions();
-    loadBlueDevice();
+    //loadBlueDevice();
 
   }
 
@@ -151,6 +153,12 @@ class _BluetoothDevicePageState extends State<BluetoothDevicePage> {
                 .headlineMedium
                 ?.copyWith(fontSize: 20.sp, fontWeight: FontWeight.bold),
           ),
+          actions: <Widget>[
+            IconButton(
+              onPressed: loadBlueDevice, //connectToPi, 
+              icon: const Icon(Icons.refresh),  // bluetooth
+              )
+          ],
         ),
       ),
       body:  Stack(
@@ -170,7 +178,8 @@ class _BluetoothDevicePageState extends State<BluetoothDevicePage> {
 
   Widget buildDeviceList() {
       return _devices.isEmpty
-          ? Center(child: CircularProgressIndicator())
+          ///? Center(child: CircularProgressIndicator())
+          ? Center(child: Text("Press Refresh Button"),)
           : ListView.builder(
               itemCount: _devices.length,
               itemBuilder: (context, index) {

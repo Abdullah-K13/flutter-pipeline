@@ -61,6 +61,10 @@ public class BluetoothScanner implements Runnable {
         }
     }
 
+    public void addLinkToFlutter(MethodChannel _methodChannel){
+        methodChannel = _methodChannel;
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void startScan() {
         if (!isScanning) {
@@ -194,8 +198,10 @@ public class BluetoothScanner implements Runnable {
         // Ensure you run any UI updates on the main thread
         Log.d(TAG, "Received: " + data);
         mainHandler.post(new Runnable() {
+            
             @Override
             public void run() {
+                Log.d(TAG, "Run Method");
                 if (methodChannel != null) {
                     Log.d(TAG, "calling method");
                     methodChannel.invokeMethod("onBluetoothDataReceived", data);

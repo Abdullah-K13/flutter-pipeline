@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../core/theme.dart';
-import 'register_screen.dart';
-import 'Bluetooth_screen.dart';
+import 'views/Bluetooth_screen.dart';
+import 'views/register_screen.dart';
+
 
 void main() {
   runApp(const MyApp());

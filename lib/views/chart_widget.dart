@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:gym_beam/core/spacev.dart';
 
 class ChartWidget extends StatelessWidget {
@@ -9,9 +10,7 @@ class ChartWidget extends StatelessWidget {
     FlSpot(1, 0),
     FlSpot(2, 0),
     FlSpot(3, 0),
-    FlSpot(4, 0),
-    FlSpot(5, 0),
-    FlSpot(6, 0),
+
   ];
 
   ChartWidget({
@@ -96,13 +95,7 @@ class ChartWidget extends StatelessWidget {
                             end: Alignment.bottomCenter,
                           ),
                         ),
-                        spots: const [
-                          FlSpot(1, 1.2),
-                          FlSpot(2, 1.5),
-                          FlSpot(3, 1.3),
-                          FlSpot(4, 1.4),
-                          FlSpot(5, 1.2),
-                        ],
+                        spots: RunDetails
                       ),
                     ],
                     lineTouchData: const LineTouchData(
@@ -112,13 +105,7 @@ class ChartWidget extends StatelessWidget {
                 ),
                 CustomPaint(
                   size: Size(300, 171.h), // Specify the same size as the chart
-                  painter: ValuesPainter([
-                    const FlSpot(1, 1.2),
-                    const FlSpot(2, 1.5),
-                    const FlSpot(3, 1.3),
-                    const FlSpot(4, 1.4),
-                    const FlSpot(5, 1.2),
-                  ]),
+                  painter: ValuesPainter(RunDetails),
                 ),
               ],
             ),
@@ -129,14 +116,7 @@ class ChartWidget extends StatelessWidget {
             height: 50.h,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildPageButton("1", true, context),
-                _buildPageButton("2", false, context),
-                _buildPageButton("3", false, context),
-                _buildPageButton("4", false, context),
-                _buildPageButton("5", false, context),
-                _buildPageButton("6", false, context),
-              ],
+              children: _buildPageButton( 1, context, RunDetails.length),
             ),
           ),
           const SpaceV(),
@@ -155,15 +135,22 @@ class ChartWidget extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 24.w),
-              Container(
-                height: 36.h,
-                width: 36.w,
-                decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.secondary,
-                    borderRadius: BorderRadius.circular(8.r)),
-                child: const Icon(
-                  Icons.arrow_forward_ios,
-                  color: Colors.white,
+              GestureDetector(
+                onTap: (){
+                  print("TAP TAP");
+                  
+                },
+                child: Container(
+                  height: 36.h,
+                  width: 36.w,
+                  decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.secondary,
+                      borderRadius: BorderRadius.circular(8.r)),
+                  child: 
+                  const Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.white,
+                  ),
                 ),
               )
             ],
@@ -186,25 +173,32 @@ class ChartWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildPageButton(String text, bool isSelected, BuildContext context) {
-    return Container(
-      width: 30.w,
-      height: 30.h,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: isSelected
-            ? Theme.of(context).colorScheme.secondaryContainer
-            : Colors.teal,
-        shape: BoxShape.circle,
-      ),
-      child: Text(
-        text,
-        style: Theme.of(context)
-            .textTheme
-            .titleMedium
-            ?.copyWith(color: Colors.white),
-      ),
-    );
+  List<Widget> _buildPageButton(int Selectednum, BuildContext context, int itemcount ) {
+    List<Widget> pointbuttons = [];
+    bool isSelected = false;
+    for(int i=0;i<itemcount;i++){
+      isSelected = Selectednum == i? true: false;
+      pointbuttons.add(
+          Container(
+          width: 30.w,
+          height: 30.h,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: isSelected
+                ? Theme.of(context).colorScheme.secondaryContainer
+                : Colors.teal,
+            shape: BoxShape.circle,
+          ),
+          child: Text(
+            '${i+1}',
+            style: Theme.of(context)
+                .textTheme
+                .titleMedium
+                ?.copyWith(color: Colors.white),
+          ),
+        ));
+    }
+    return pointbuttons;
   }
 }
 

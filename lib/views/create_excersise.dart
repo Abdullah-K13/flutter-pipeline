@@ -295,7 +295,7 @@ class _CreateExerciseScreenState extends State<CreateExerciseScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => MultipointRunScreen(),
+                                    builder: (_) => MultipointRunScreen(pointList : _positionList),
                                   ),
                                 );
                               },

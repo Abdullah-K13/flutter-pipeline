@@ -3,7 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gym_beam/views/widgets/multi_line%20painter.dart';
 
 class MultiResponsiveUI extends StatelessWidget {
-  const MultiResponsiveUI({super.key});
+  MultiResponsiveUI({super.key});
+
+  List<List<double>> pointList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +34,7 @@ class MultiResponsiveUI extends StatelessWidget {
               return Container(
                 color: Colors.white,
                 child: CustomPaint(
-                  painter: MultiGridAndDashedLinePainter(),
+                  painter: MultiGridAndDashedLinePainter(pointList),
                   child: Stack(
                     children: positions.map((position) {
                       return Positioned(

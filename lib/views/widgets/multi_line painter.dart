@@ -1,8 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:math';
+import '../../config_data.dart';
 
 class MultiGridAndDashedLinePainter extends CustomPainter {
+
+  var points = [
+      //Offset(center.dx, center.dy - radius * 0.5), // Point 1
+      //Offset(center.dx - radius * 0.6, center.dy), // Point 2
+      //Offset(center.dx, center.dy + radius * 0.6), // Point 3
+      //Offset(center.dx + radius * 0.6, center.dy), // Point 4
+      //Offset(center.dx + radius * 0.3, center.dy - radius * 0.4), // Point 5
+    ];
+  MultiGridAndDashedLinePainter(List<List<double>> positionList){
+    points = positionList;
+  }
+
+
   @override
   void paint(Canvas canvas, Size size) {
     final gridPaint = Paint()
@@ -11,11 +25,11 @@ class MultiGridAndDashedLinePainter extends CustomPainter {
       ..style = PaintingStyle.stroke;
 
     // Draw grid
-    for (int i = 0; i <= 6; i++) {
-      canvas.drawLine(Offset(size.width / 6 * i, 0),
-          Offset(size.width / 6 * i, size.height), gridPaint);
-      canvas.drawLine(Offset(0, size.height / 6 * i),
-          Offset(size.width, size.height / 6 * i), gridPaint);
+    for (int i = 0; i <= AppConfigData.diameter; i++) {
+      canvas.drawLine(Offset(size.width / AppConfigData.diameter * i, 0),
+          Offset(size.width / AppConfigData.diameter * i, size.height), gridPaint);
+      canvas.drawLine(Offset(0, size.height / AppConfigData.diameter * i),
+          Offset(size.width, size.height / AppConfigData.diameter * i), gridPaint);
     }
 
     final textPainter = TextPainter(
@@ -24,7 +38,7 @@ class MultiGridAndDashedLinePainter extends CustomPainter {
     );
 
     // Draw text centered within the grid boxes
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < AppConfigData.diameter; i++) {
       // Draw X-axis labels at the top
       final xTextSpan = TextSpan(
         text: '1m',
@@ -35,11 +49,11 @@ class MultiGridAndDashedLinePainter extends CustomPainter {
       textPainter.paint(
           canvas,
           Offset(
-              (size.width / 6) * i + (size.width / 12) - textPainter.width / 2,
+              (size.width / AppConfigData.diameter) * i + (size.width / (AppConfigData.diameter * 2)) - textPainter.width / 2,
               -16.h));
     }
 
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < AppConfigData.diameter; i++) {
       // Draw Y-axis labels on the left
       final yTextSpan = TextSpan(
         text: '1m',
@@ -52,8 +66,8 @@ class MultiGridAndDashedLinePainter extends CustomPainter {
           Offset(
               -24.w,
               size.height -
-                  (size.height / 6) * i -
-                  (size.height / 12) -
+                  (size.height / AppConfigData.diameter) * i -
+                  (size.height / (2 * AppConfigData.diameter)) -
                   textPainter.height / 2));
     }
 
@@ -116,14 +130,6 @@ class MultiGridAndDashedLinePainter extends CustomPainter {
 
     _drawText(canvas, center, '0', Colors.white);
 
-    // Define the points and lines
-    final points = [
-      Offset(center.dx, center.dy - radius * 0.6), // Point 1
-      Offset(center.dx - radius * 0.6, center.dy), // Point 2
-      Offset(center.dx, center.dy + radius * 0.6), // Point 3
-      Offset(center.dx + radius * 0.6, center.dy), // Point 4
-      Offset(center.dx + radius * 0.3, center.dy - radius * 0.4), // Point 5
-    ];
 
     // Draw dashed lines connecting points sequentially with increased transparency
     final dashedLinePaint = Paint()
@@ -133,7 +139,7 @@ class MultiGridAndDashedLinePainter extends CustomPainter {
 
     for (int i = 0; i < points.length; i++) {
       _drawDashedLine(
-          canvas, i == 0 ? center : points[i - 1], points[i], dashedLinePaint);
+          canvas, i == 0 ? center : Offset(points[i-1][0], points[i-1][1]), Offset(points[i][0], points[i][1]), dashedLinePaint);
     }
 
     // Draw points
@@ -142,8 +148,8 @@ class MultiGridAndDashedLinePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     for (int i = 0; i < points.length; i++) {
-      canvas.drawCircle(points[i], 10.w, paintPoint);
-      _drawText(canvas, points[i], (i + 1).toString(), Colors.white);
+      canvas.drawCircle(Offset(points[i][0], points[i][1]), 10.w, paintPoint);
+      _drawText(canvas, Offset(points[i][0], points[i][1]), (i + 1).toString(), Colors.white);
     }
   }
 

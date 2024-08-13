@@ -11,15 +11,29 @@ import 'package:gym_beam/views/profile/screens/profile_screen.dart';
 import 'package:gym_beam/views/widgets/multi_line%20painter.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../bluetooth_API.dart';
+import '../api/web_API.dart';
 
 class MultipointRunScreen extends StatefulWidget {
-  MultipointRunScreen({super.key});
+
+  List<List<double>> pointList;
+  
+  MultipointRunScreen({
+    super.key,
+    required this.pointList,
+    });
+
+
 
   @override
-  State<MultipointRunScreen> createState() => _MultipointRunScreenState();
+  State<MultipointRunScreen> createState() => _MultipointRunScreenState(pointList);
 }
 
 class _MultipointRunScreenState extends State<MultipointRunScreen> {
+
+  List<List<double>> pointList = [];
+  _MultipointRunScreenState(List<List<double>> PointList){
+    pointList = PointList;
+  }
 
   BluAPI blueapi = BluAPI();
 
@@ -35,6 +49,27 @@ class _MultipointRunScreenState extends State<MultipointRunScreen> {
     FlSpot(6, 0),
   ];
 
+  int convertToInt(var timeVal){
+    int? val;
+
+    // Check if value is int
+    if (timeVal is int) {
+      val = timeVal;
+    }
+    // Check if value is String that can be converted to int
+    else if (timeVal is String) {
+      val = int.tryParse(timeVal); // Safely parse the string to int
+    }
+    // Check if value is double, you might want to round or floor it
+    else if (timeVal is double) {
+      val = timeVal.toInt();
+    } else {
+      print("Unexpected type for 'point': ${timeVal.runtimeType}");
+      val = 0;
+    }
+    return val!;
+  }
+
   void receiveBlueData(Map<String, dynamic> jsonData){
     print("ENTER receiveBlueData");
     print(jsonData["type"]);
@@ -43,16 +78,26 @@ class _MultipointRunScreenState extends State<MultipointRunScreen> {
     
     List<FlSpot> newrun = [];
 
+    List<DateTime> timedetails = [];
+
     for(int i=0;i<jsonData["coordinateCount"];i++){
-      newrun.add(FlSpot(i.toDouble(), jsonData["point$i"]));
+      if(jsonData.containsKey("point$i")){
+        newrun.add(FlSpot(i.toDouble(), jsonData["point$i"]));
+        int val = convertToInt(jsonData["point$i"]);
+        timedetails.add(DateTime.fromMillisecondsSinceEpoch(val * 1000));
+      }
     }
+    print("new run : "+  newrun.toString());
+
+    print("Sending drilld ata to server");
+    WebAPI.instance.createDrill(jsonData["name"], jsonData["coordinateCount"], timedetails);
 
     setState(() {
       allRunsData.add(newrun);
       selectedRun = newrun;
     });
 
-
+    
   }
 
 
@@ -128,7 +173,7 @@ class _MultipointRunScreenState extends State<MultipointRunScreen> {
                     CustomPaint(
                       size: Size(310.w, 340.h),
                       painter:
-                          MultiGridAndDashedLinePainter(), // Use the new painter here
+                          MultiGridAndDashedLinePainter(pointList), // Use the new painter here
                     ),
                     ////////////////////////////////////////////////////////////////////////////////////
                     //////////////// Play Area [End]
