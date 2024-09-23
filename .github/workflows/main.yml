@@ -19,7 +19,7 @@ jobs:
 
       # Step 2: Set up Flutter environment
       - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+        uses: subosito/flutter-action@v3
         with:
           flutter-version: '3.3.2'  # Set your Flutter version here
 
@@ -33,7 +33,7 @@ jobs:
 
       # Step 5: Upload APK as an artifact
       - name: Upload APK
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: flutter-apk
           path: build/app/outputs/flutter-apk/app-release.apk
