@@ -1,13 +1,8 @@
 name: Flutter APK Build
 
 on:
-  push:
-    branches:
-      - main  # Build on every push to the main branch
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+  workflow_dispatch:  # Allows manual trigger
+
 
 jobs:
   build:
